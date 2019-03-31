@@ -17,6 +17,7 @@ notifications:
 
 before_install:
   - export GO111MODULE=on # Enable go mod
+  - go mod init # Init go modules
   - go mod vendor # Download deps
 
 before_script:
