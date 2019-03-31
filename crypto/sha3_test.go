@@ -4,7 +4,7 @@ import "testing"
 
 func TestSha3(t *testing.T) {
 	payload := []byte("payload")
-	if Sha3(payload).isNil() {
+	if Sha3(payload).IsNil() {
 		t.Fatal("hash should not be nil")
 	}
 }
