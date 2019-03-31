@@ -27,4 +27,4 @@ script:
   - test -z $(gofmt -s -l $GO_FILES) # Fail if a .go file hasn't been formatted with gofmt
   - go vet ./... # Go vet is the official Go static analyzer
   - chmod +x ./test.sh && ./test.sh # Run unit tests
-- go build # Build
+  - go build # Build
