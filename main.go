@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	payload := []byte("test")
+	payload := []byte("test hash")
 	hash := crypto.Sha3(payload)
-	fmt.Println(hash)
+	fmt.Println(hash.String())
 }

@@ -1,5 +1,7 @@
 package common
 
+import "encoding/hex"
+
 const (
 	// HashLength is the standardized length of a hash
 	HashLength = 32
@@ -44,4 +46,10 @@ func (hash Hash) IsNil() bool {
 // Bytes converts a given hash to a byte array
 func (hash Hash) Bytes() []byte {
 	return hash[:] // Return byte array value
+}
+
+// String returns the hash as a hex string
+func (hash Hash) String() string {
+	b := hash.Bytes()
+	return hex.EncodeToString(b) // Convert to a hex string
 }
