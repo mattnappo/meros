@@ -8,7 +8,7 @@ func SplitBytes(bytes []byte, n int) ([][]byte, error) {
 	for _, b := range bytes {
 		for i = 0; i < n; i++ {
 			var split []byte
-			append(split)
+			parts[i] = append(split, b)
 		}
 	}
 	return nil, nil // Placeholder
