@@ -13,20 +13,20 @@ func TestCompressBytes(t *testing.T) {
 	// t.Logf("%x\n\n", b.String())
 
 	raw := []byte("hello world")
-	t.Logf("raw: %x\n", raw)
+	// t.Logf("raw: %x\n", raw)
 
 	compressed, err := CompressBytes(raw)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	t.Logf("compressed: %x\n", compressed)
+	// t.Logf("compressed: %x\n", compressed)
 
-	decompressed, err := DecompressBytes(compressed)
+	_, err = DecompressBytes(compressed)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	t.Logf("decompressed: %x\n", decompressed)
+	// t.Logf("decompressed: %x\n", decompressed)
 
 }

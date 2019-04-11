@@ -5,6 +5,9 @@ import "encoding/hex"
 const (
 	// HashLength is the standardized length of a hash
 	HashLength = 32
+
+	// MaxShardSize is the maximum amount of data that a shard can hold
+	MaxShardSize = 500000 // 0.5 MB
 )
 
 // Hash represents the streamlined hash type to be used
