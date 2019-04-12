@@ -39,16 +39,23 @@ func NewShard(bytes []byte) (*Shard, error) {
 }
 
 // CalculateShardSizes determines the recommended size of each shard
-func CalculateShardSizes(raw []byte) ([]uint32, error) {
-	if len(raw) == 0 {
+func CalculateShardSizes(raw []byte, n int) ([]uint32, error) {
+	rawSize := len(raw)
+
+	// Check that the input is not null
+	if rawSize == 0 {
 		return nil, ErrCannotCalculateShardSizes
 	}
 
-	// If the number is odd
-	if len(raw)%2 == 0 {
+	partitionSize := uint32(rawSize / n) // Calculate the size of each shard
+	modulo := uint32(rawSize % n)        // Calculate the module mod n)
 
-	} else { // If the number is even
-
+	// Populate a slice of the correct shard sizes
+	var sizes []uint32
+	for i := 0; i < n; i++ {
+		sizes = append(sizes, partitionSize)
 	}
+	sizes[n] += modulo // Add the left over bytes to the last element
 
+	return sizes, nil
 }
