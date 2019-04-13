@@ -2,6 +2,7 @@ package types
 
 import (
 	"errors"
+	"math"
 
 	"github.com/xoreo/meros/common"
 	"github.com/xoreo/meros/crypto"
@@ -47,15 +48,22 @@ func CalculateShardSizes(raw []byte, n int) ([]uint32, error) {
 		return nil, ErrCannotCalculateShardSizes
 	}
 
-	partitionSize := uint32(rawSize / n) // Calculate the size of each shard
-	modulo := uint32(rawSize % n)        // Calculate the module mod n)
+	partition := math.Floor(float64(rawSize / n)) // Calculate the size of each shard
+	partitionSize := uint32(partition)            // Convert to a uint32
+	modulo := uint32(rawSize % n)                 // Calculate the module mod n
 
 	// Populate a slice of the correct shard sizes
 	var sizes []uint32
 	for i := 0; i < n; i++ {
 		sizes = append(sizes, partitionSize)
 	}
-	sizes[n] += modulo // Add the left over bytes to the last element
+
+	// Adjust for the left over bytes
+	if modulo+partitionSize >= partitionSize*uint32(n) {
+
+	}
+
+	sizes[n-1] += modulo // Add the left over bytes to the last element
 
 	return sizes, nil
 }
