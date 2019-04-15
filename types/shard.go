@@ -5,6 +5,7 @@ import (
 	"math"
 
 	"github.com/xoreo/meros/common"
+	"github.com/xoreo/meros/core"
 	"github.com/xoreo/meros/crypto"
 )
 
@@ -66,4 +67,34 @@ func CalculateShardSizes(raw []byte, n int) ([]uint32, error) {
 	sizes[n-1] += modulo // Add the left over bytes to the last element
 
 	return sizes, nil
+}
+
+// GenerateShards generates a slice of shards given a string of bytes
+func GenerateShards(bytes []byte, n int) ([]*Shard, error) {
+	var shards []*Shard // Init the shard slice
+
+	// splitBytes is going to be a 2d array that is returned from the core.split function
+
+	shardSizes, err := CalculateShardSizes(bytes, n) // Calculate the shard sizes
+	if err != nil {
+		return nil, err
+	}
+
+	splitBytes, err := core.SplitBytes(bytes, shardSizes) // Split the bytes into the correct sizes
+	if err != nil {
+		return nil, err
+	}
+
+	// Generate the slices
+	for i := 0; i < len(shardSizes); i++ {
+		newShard, err := NewShard(
+			splitBytes[i],
+		)
+		if err != nil {
+			return nil, err
+		}
+		shards = append(shards, newShard)
+	}
+
+	return nil, nil
 }
