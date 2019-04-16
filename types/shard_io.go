@@ -1,6 +1,7 @@
 package types
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"path/filepath"
@@ -19,8 +20,8 @@ func (shard *Shard) WriteShardToMemory() error {
 	}
 
 	// Create the filename of the hash
-	shardHashString := (*shard).Hash.String()
-	filename := fmt.Sprintf("data/shard_%s.json", shardHashString)[0:8]
+	shardHashString := (*shard).Hash.String()[0:8]
+	filename := fmt.Sprintf("data/shards/shard_%s.json", shardHashString)
 
 	err = ioutil.WriteFile(filepath.FromSlash(filename), bytes, 0644)
 	if err != nil {
@@ -28,4 +29,23 @@ func (shard *Shard) WriteShardToMemory() error {
 	}
 
 	return nil
+}
+
+// ReadShardFromMemory reads a shard from memory
+func ReadShardFromMemory(hash string) (*Shard, error) {
+	// Read the file from memory
+	data, err := ioutil.ReadFile(fmt.Sprintf("data/shards/shard_%s.json", hash))
+	if err != nil {
+		return nil, err
+	}
+
+	buffer := &Shard{} // Init a shard buffer
+
+	// Read into the buffer
+	err = json.Unmarshal(data, buffer)
+	if err != nil {
+		return nil, err
+	}
+
+	return buffer, nil // Return the shard pointer
 }

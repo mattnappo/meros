@@ -37,3 +37,21 @@ func TestGenerateShards(t *testing.T) {
 	}
 
 }
+
+func TestFromBytes(t *testing.T) {
+	bytes := []byte("test bytes")
+	shard, err := NewShard(bytes)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	shardBytes := shard.Serialize()
+
+	newShard, err := ShardFromBytes(shardBytes)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	t.Logf("[newShard] %s\n", newShard.String())
+
+}

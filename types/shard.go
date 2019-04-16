@@ -113,8 +113,8 @@ func (shard *Shard) Serialize() []byte {
 	return json
 }
 
-// FromBytes constructs a *Shard from bytes
-func FromBytes(b []byte) (*Shard, error) {
+// ShardFromBytes constructs a *Shard from bytes
+func ShardFromBytes(b []byte) (*Shard, error) {
 	buffer := &Shard{}
 	err := json.Unmarshal(b, buffer)
 	if err != nil {
