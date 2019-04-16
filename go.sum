@@ -1,3 +1,5 @@
+github.com/xoreo/go-basics v0.0.0-20190205125842-aa229aa727e8 h1:cGqPFIL1O3tm5PoPDaVTY1sWVye8jfbIEEolhMh4URE=
+github.com/xoreo/go-basics v0.0.0-20190205125842-aa229aa727e8/go.mod h1:cUKhGS+ZjEIzBSAeTCBmTSd9Z0hMyPnvtwQXYjSFEPg=
 golang.org/x/crypto v0.0.0-20190325154230-a5d413f7728c h1:Vj5n4GlwjmQteupaxJ9+0FNOmBrHfq7vN4btdGoDZgI=
 golang.org/x/crypto v0.0.0-20190325154230-a5d413f7728c/go.mod h1:djNgcEr1/C05ACkg1iLfiJU5Ep61QUkGW8qpdssI0+w=
 golang.org/x/crypto v0.0.0-20190404164418-38d8ce5564a5 h1:bselrhR0Or1vomJZC8ZIjWtbDmn9OYFLX5Ik9alpJpE=

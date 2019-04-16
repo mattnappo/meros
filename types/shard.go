@@ -41,11 +41,6 @@ func NewShard(bytes []byte) (*Shard, error) {
 	return newShard, nil
 }
 
-func (shard *Shard) String() string {
-	json, _ := json.MarshalIndent(*shard, "", "  ")
-	return string(json)
-}
-
 // CalculateShardSizes determines the recommended size of each shard
 func CalculateShardSizes(raw []byte, n int) ([]uint32, error) {
 	rawSize := len(raw)
@@ -104,3 +99,29 @@ func GenerateShards(bytes []byte, n int) ([]*Shard, error) {
 
 	return shards, nil
 }
+
+/* ----- BEGIN HELPER FUNCTIONS ----- */
+
+func (shard *Shard) String() string {
+	json, _ := json.MarshalIndent(*shard, "", "  ")
+	return string(json)
+}
+
+// Serialize serializes a Shard pointer to bytes
+func (shard *Shard) Serialize() []byte {
+	json, _ := json.MarshalIndent(*shard, "", "  ")
+	return json
+}
+
+// FromBytes constructs a *Shard from bytes
+func FromBytes(b []byte) (*Shard, error) {
+	buffer := &Shard{}
+	err := json.Unmarshal(b, buffer)
+	if err != nil {
+		return nil, err
+	}
+
+	return buffer, nil
+}
+
+/* ----- END HELPER FUNCTIONS ----- */

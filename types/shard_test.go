@@ -9,9 +9,6 @@ func TestNewShard(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	// t.Log((*newShard).Hash.String())
-	// t.Log((*newShard).Size)
-	// t.Log((*newShard).Bytes)
 	t.Log((*newShard).String())
 }
 func TestCalculateShardSizes(t *testing.T) {
