@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"math"
+	"time"
 
 	"github.com/xoreo/meros/common"
 	"github.com/xoreo/meros/core"
@@ -21,9 +22,10 @@ var (
 // Shard is a struct that holds a piece of data that is
 // a part of another, bigger piece of data
 type Shard struct {
-	Size  uint32      `json:"size"`  // The size of the shard
-	Bytes []byte      `json:"bytes"` // The actual data of the shard
-	Hash  common.Hash `json:"hash"`  // The hash of the shard
+	Size      uint32      `json:"size"`      // The size of the shard
+	Bytes     []byte      `json:"bytes"`     // The actual data of the shard
+	Hash      common.Hash `json:"hash"`      // The hash of the shard
+	Timestamp string      `json:"timestamp"` // The timestamp of the shard
 }
 
 // NewShard attempts to construct a new shard
@@ -32,10 +34,12 @@ func NewShard(bytes []byte) (*Shard, error) {
 		return nil, ErrNilBytes
 	}
 
+	// Make the new shard
 	newShard := &Shard{
-		Size:  uint32(len(bytes)),
-		Bytes: bytes,
-		Hash:  crypto.Sha3(bytes),
+		Size:      uint32(len(bytes)),
+		Bytes:     bytes,
+		Hash:      crypto.Sha3(bytes), // Hash the bytes of the shard, not the shard itself
+		Timestamp: time.Now().String(),
 	}
 
 	return newShard, nil
@@ -111,6 +115,14 @@ func (shard *Shard) String() string {
 func (shard *Shard) Serialize() []byte {
 	json, _ := json.MarshalIndent(*shard, "", "  ")
 	return json
+}
+
+// Validate makes sure that the shard is valid
+func (shard *Shard) Validate() bool {
+	if crypto.Sha3((*shard).Bytes) == (*shard).Hash {
+		return true
+	}
+	return false
 }
 
 // ShardFromBytes constructs a *Shard from bytes

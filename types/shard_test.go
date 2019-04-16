@@ -1,6 +1,10 @@
 package types
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/xoreo/meros/crypto"
+)
 
 func TestNewShard(t *testing.T) {
 	bytes := []byte("test bytes")
@@ -54,4 +58,25 @@ func TestFromBytes(t *testing.T) {
 
 	t.Logf("[newShard] %s\n", newShard.String())
 
+}
+
+func TestValidate(t *testing.T) {
+	bytes := []byte("test bytes")
+	shard, err := NewShard(bytes)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	isValid := (*shard).Validate()
+	if isValid == false {
+		t.Fatal("shard is actually valid")
+	}
+
+	badHash := crypto.Sha3([]byte("not a valid hash"))
+	(*shard).Hash = badHash
+
+	isValid = (*shard).Validate()
+	if isValid == true {
+		t.Fatal("shard is actually invalid")
+	}
 }

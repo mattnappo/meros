@@ -2,12 +2,16 @@ package types
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"path/filepath"
 
 	"github.com/xoreo/meros/common"
 )
+
+// ErrInvalidShard is returned when a shard's hash is not valid when loading from memory
+var ErrInvalidShard = errors.New("shard from memory could not be validated")
 
 // WriteShardToMemory writes a shard to memory
 func (shard *Shard) WriteShardToMemory() error {
@@ -45,6 +49,10 @@ func ReadShardFromMemory(hash string) (*Shard, error) {
 	err = json.Unmarshal(data, buffer)
 	if err != nil {
 		return nil, err
+	}
+
+	if (*buffer).Validate() == false {
+		return nil, ErrInvalidShard
 	}
 
 	return buffer, nil // Return the shard pointer
