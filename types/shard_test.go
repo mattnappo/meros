@@ -9,9 +9,10 @@ func TestNewShard(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	t.Log((*newShard).Hash.String())
-	t.Log((*newShard).Size)
-	t.Log((*newShard).Bytes)
+	// t.Log((*newShard).Hash.String())
+	// t.Log((*newShard).Size)
+	// t.Log((*newShard).Bytes)
+	t.Log((*newShard).String())
 }
 func TestCalculateShardSizes(t *testing.T) {
 	rawBytes := []byte("123456789")
@@ -23,5 +24,19 @@ func TestCalculateShardSizes(t *testing.T) {
 }
 
 func TestGenerateShards(t *testing.T) {
+	bytes := []byte("these are the bytes of a test file that is going to be sharded.")
+	nodes := 5
+
+	shards, err := GenerateShards(
+		bytes,
+		nodes,
+	)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	for i, shard := range shards {
+		t.Logf("\n[shard %d] %s\n", i, shard.String())
+	}
 
 }

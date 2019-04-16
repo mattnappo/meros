@@ -1,6 +1,7 @@
 package types
 
 import (
+	"encoding/json"
 	"errors"
 	"math"
 
@@ -40,6 +41,11 @@ func NewShard(bytes []byte) (*Shard, error) {
 	return newShard, nil
 }
 
+func (shard *Shard) String() string {
+	json, _ := json.MarshalIndent(*shard, "", "  ")
+	return string(json)
+}
+
 // CalculateShardSizes determines the recommended size of each shard
 func CalculateShardSizes(raw []byte, n int) ([]uint32, error) {
 	rawSize := len(raw)
@@ -70,6 +76,7 @@ func CalculateShardSizes(raw []byte, n int) ([]uint32, error) {
 }
 
 // GenerateShards generates a slice of shards given a string of bytes
+// This function is a wrapper function. It does not do anything unique.
 func GenerateShards(bytes []byte, n int) ([]*Shard, error) {
 	var shards []*Shard // Init the shard slice
 
@@ -95,5 +102,5 @@ func GenerateShards(bytes []byte, n int) ([]*Shard, error) {
 		shards = append(shards, newShard) // Append the new shard to the shard slice
 	}
 
-	return nil, nil
+	return shards, nil
 }
