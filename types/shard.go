@@ -45,7 +45,7 @@ func CalculateShardSizes(raw []byte, n int) ([]uint32, error) {
 	rawSize := len(raw)
 
 	// Check that the input is not null
-	if rawSize == 0 {
+	if rawSize == 0 || n == 0 {
 		return nil, ErrCannotCalculateShardSizes
 	}
 
@@ -73,8 +73,6 @@ func CalculateShardSizes(raw []byte, n int) ([]uint32, error) {
 func GenerateShards(bytes []byte, n int) ([]*Shard, error) {
 	var shards []*Shard // Init the shard slice
 
-	// splitBytes is going to be a 2d array that is returned from the core.split function
-
 	shardSizes, err := CalculateShardSizes(bytes, n) // Calculate the shard sizes
 	if err != nil {
 		return nil, err
@@ -87,13 +85,14 @@ func GenerateShards(bytes []byte, n int) ([]*Shard, error) {
 
 	// Generate the slices
 	for i := 0; i < len(shardSizes); i++ {
+		// Create a new shard
 		newShard, err := NewShard(
 			splitBytes[i],
 		)
-		if err != nil {
+		if err != nil { // Check error
 			return nil, err
 		}
-		shards = append(shards, newShard)
+		shards = append(shards, newShard) // Append the new shard to the shard slice
 	}
 
 	return nil, nil

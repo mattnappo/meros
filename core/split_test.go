@@ -1,6 +1,8 @@
 package core
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestCalculateSizeSum(t *testing.T) {
 	sizeVector := []uint32{1, 2, 3, 4} // Sum = 10
@@ -13,8 +15,8 @@ func TestCalculateSizeSum(t *testing.T) {
 }
 
 func TestSplitBytes(t *testing.T) {
-	bytes := []byte("1234")
-	sizes := []uint32{1, 2, 2}
+	bytes := []byte("Hello, world!")
+	sizes := []uint32{3, 3, 3, 3, 1}
 
 	splitBytes, err := SplitBytes(bytes, sizes)
 	if err != nil {

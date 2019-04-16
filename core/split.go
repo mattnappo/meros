@@ -19,21 +19,36 @@ func calculateSizeSum(sizes []uint32) uint32 {
 
 // SplitBytes splits a []byte n times
 func SplitBytes(bytes []byte, sizes []uint32) ([][]byte, error) {
+	// Check that the bytes can be split given the size vector
 	if uint32(len(bytes)) != calculateSizeSum(sizes) {
 		return nil, ErrCannotSplitBytes
 	}
-	currentBytePos := 0
 
-	var splitBytes [][]byte
+	var splitBytes [][]byte // Init the master slice
+	currentBytePos := 0     // Init the byte position
 
-	for i := 0; i < len(sizes); i++ { // For each shard
+	// currentByte := bytes[currentBytePos]
+
+	for _, currentSize := range sizes {
 		var tempBytes []byte // Init shard[i]'s byte slice
 
-		for j := currentBytePos; j < int(sizes[i]); j++ { // For each byte that the shard should have
+		for i := 0; i < int(currentSize); i++ {
 			tempBytes = append(tempBytes, bytes[currentBytePos])
 			currentBytePos++
 		}
-		splitBytes = append(splitBytes, tempBytes) // Append to the master slice
+		splitBytes = append(splitBytes, tempBytes)
+
+		// at the very end
+		// currentBytePos = int(currentSize)
 	}
-	return splitBytes, nil // Placeholder
+	// for i := 0; i < len(sizes); i++ { // For each shard (size)
+	// 	var tempBytes []byte // Init shard[i]'s byte slice
+
+	// 	for j := currentBytePos; j < int(sizes[i]); j++ { // For each byte that the shard should have
+	// 		tempBytes = append(tempBytes, bytes[currentBytePos])
+	// 		currentBytePos++
+	// 	}
+	// 	splitBytes = append(splitBytes, tempBytes) // Append to the master slice
+	// }
+	return splitBytes, nil
 }
