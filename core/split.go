@@ -27,28 +27,17 @@ func SplitBytes(bytes []byte, sizes []uint32) ([][]byte, error) {
 	var splitBytes [][]byte // Init the master slice
 	currentBytePos := 0     // Init the byte position
 
-	// currentByte := bytes[currentBytePos]
-
+	// For each size (shard)
 	for _, currentSize := range sizes {
 		var tempBytes []byte // Init shard[i]'s byte slice
 
+		// For each byte that needs to be added
 		for i := 0; i < int(currentSize); i++ {
-			tempBytes = append(tempBytes, bytes[currentBytePos])
-			currentBytePos++
+			tempBytes = append(tempBytes, bytes[currentBytePos]) // Add the byte
+			currentBytePos++                                     // Move the "byte cursor"
 		}
-		splitBytes = append(splitBytes, tempBytes)
-
-		// at the very end
-		// currentBytePos = int(currentSize)
+		splitBytes = append(splitBytes, tempBytes) // Append the shard's bytes to the master slice
 	}
-	// for i := 0; i < len(sizes); i++ { // For each shard (size)
-	// 	var tempBytes []byte // Init shard[i]'s byte slice
 
-	// 	for j := currentBytePos; j < int(sizes[i]); j++ { // For each byte that the shard should have
-	// 		tempBytes = append(tempBytes, bytes[currentBytePos])
-	// 		currentBytePos++
-	// 	}
-	// 	splitBytes = append(splitBytes, tempBytes) // Append to the master slice
-	// }
 	return splitBytes, nil
 }
