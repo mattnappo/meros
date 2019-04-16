@@ -2,7 +2,7 @@ package core
 
 import "errors"
 
-// ErrCannotSplitBytes is returned when a byte slice can not be split evenly with the given size array
+// ErrCannotSplitBytes is returned when a byte slice cannot be split evenly with the given size array
 var ErrCannotSplitBytes = errors.New("byte array can not be split given size vector")
 
 // calculateSizeSum calculates the sum of all of the uint32s in a []uint32
