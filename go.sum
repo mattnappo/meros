@@ -1,3 +1,5 @@
+github.com/boltdb/bolt v1.3.1 h1:JQmyP4ZBrce+ZQu0dY660FMfatumYDLun9hBCUVIkF4=
+github.com/boltdb/bolt v1.3.1/go.mod h1:clJnj/oiGkjum5o1McbSZDSLxVThjynRyGBgiAx27Ps=
 github.com/xoreo/go-basics v0.0.0-20190205125842-aa229aa727e8 h1:cGqPFIL1O3tm5PoPDaVTY1sWVye8jfbIEEolhMh4URE=
 github.com/xoreo/go-basics v0.0.0-20190205125842-aa229aa727e8/go.mod h1:cUKhGS+ZjEIzBSAeTCBmTSd9Z0hMyPnvtwQXYjSFEPg=
 golang.org/x/crypto v0.0.0-20190325154230-a5d413f7728c h1:Vj5n4GlwjmQteupaxJ9+0FNOmBrHfq7vN4btdGoDZgI=

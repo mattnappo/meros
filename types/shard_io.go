@@ -11,7 +11,7 @@ import (
 )
 
 // ErrInvalidShard is returned when a shard's hash is not valid when loading from memory
-var ErrInvalidShard = errors.New("shard from memory could not be validated")
+var ErrInvalidShard = errors.New("shard from memory is not valid")
 
 // WriteShardToMemory writes a shard to memory
 func (shard *Shard) WriteShardToMemory() error {
