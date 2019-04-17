@@ -1,6 +1,7 @@
 # OTHER
 .vscode/
 data/
+.DS_STORE
 
 # Prerequisites
 *.d
