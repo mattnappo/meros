@@ -3,6 +3,9 @@ package types
 import (
 	"encoding/json"
 	"errors"
+
+	"github.com/xoreo/meros/common"
+	"github.com/xoreo/meros/crypto"
 )
 
 var (
@@ -16,13 +19,13 @@ var (
 	ErrNilFileSize = errors.New("file size to construct file must not be nil")
 )
 
-// File containsn the metadata and location of the shards in order
-// to reconstruct the file
+// File contains the (important) metadata of a file stored in a database
 type File struct {
-	Filename   string   `json:"filename"`   // The file's filename
-	ShardCount int      `json:"shardCount"` // The number of shards hosting the file
-	Size       uint32   `json:"size"`       // The total size of the file
-	ShardDB    *ShardDB `json:"shardDB"`    // The pointer to the ShardDB, the place where the locations of the shards are stored
+	Filename   string      `json:"filename"`   // The file's filename
+	ShardCount int         `json:"shardCount"` // The number of shards hosting the file
+	Size       uint32      `json:"size"`       // The total size of the file
+	ShardDB    *ShardDB    `json:"shardDB"`    // The pointer to the ShardDB, the place where the locations of the shards are stored
+	Hash       common.Hash `json:"hash"`       // The hash of the file
 }
 
 // NewFile constructs a new file
@@ -49,6 +52,9 @@ func NewFile(filename string, shardCount int, size uint32) (*File, error) {
 		Size:       size,
 		ShardDB:    nil,
 	}
+
+	// Compute the hash of the file
+	(*file).Hash = crypto.Sha3(file.Bytes())
 	return file, nil
 }
 
