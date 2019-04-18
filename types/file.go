@@ -19,7 +19,7 @@ type File struct {
 	Filename   string   `json:"filename"`   // The file's filename
 	ShardCount int      `json:"shardCount"` // The number of shards hosting the file
 	Size       uint32   `json:"size"`       // The total size of the file
-	ShardDB    *ShardDB `json:"shardDB"`    // The pointer to the ShardDB, the place where the locations of the shards are
+	ShardDB    *ShardDB `json:"shardDB"`    // The pointer to the ShardDB, the place where the locations of the shards are stored
 }
 
 // NewFile constructs a new file
@@ -44,5 +44,7 @@ func NewFile(filename string, shardCount int, size uint32) (*File, error) {
 		Filename:   filename,   // The filename
 		ShardCount: shardCount, // The total amount of shards hostinng the file
 		Size:       size,
+		ShardDB:    nil,
 	}
+	return file, nil
 }

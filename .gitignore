@@ -2,6 +2,7 @@
 .vscode/
 data/
 .DS_STORE
+counter.py
 
 # Prerequisites
 *.d
