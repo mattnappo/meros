@@ -16,13 +16,14 @@ type DatabaseHeader struct {
 }
 
 // NewDatabaseHeader creates a new database header
-func NewDatabaseHeader(label string) {
+func NewDatabaseHeader(label string) *DatabaseHeader {
 	newDatabaseHeader := &DatabaseHeader{
 		Label:   label,
 		Created: time.Now().String(),
 	}
 
 	(*newDatabaseHeader).Hash = crypto.Sha3(newDatabaseHeader.Bytes())
+	return newDatabaseHeader
 }
 
 /* ----- BEGIN HELPER FUNCTIONS ----- */
