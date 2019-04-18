@@ -1,6 +1,9 @@
 package types
 
-import "errors"
+import (
+	"encoding/json"
+	"errors"
+)
 
 var (
 	// ErrNilFilename is returned when the fileame to construct a new file is nil
@@ -48,3 +51,19 @@ func NewFile(filename string, shardCount int, size uint32) (*File, error) {
 	}
 	return file, nil
 }
+
+/* ----- BEGIN HELPER FUNCTIONS ----- */
+
+// Bytes converts the database header to bytes
+func (file *File) Bytes() []byte {
+	json, _ := json.MarshalIndent(*file, "", "  ")
+	return json
+}
+
+// String converts the database to a string
+func (file *File) String() string {
+	json, _ := json.MarshalIndent(*file, "", "  ")
+	return string(json)
+}
+
+/* ----- END HELPER FUNCTIONS ----- */

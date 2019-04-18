@@ -8,7 +8,7 @@ import (
 
 var (
 	// ErrNilDBLabel is returned when a nil label is given
-	ErrNilDBLabel = errors.New("label for creating a shard database must not be nil")
+	ErrNilDBLabel = errors.New("label for creating a shard database header must not be nil")
 )
 
 // ShardDB is the database that holds the locations of each shard of a (larger) file
@@ -24,7 +24,10 @@ func NewShardDB(label string) (*ShardDB, error) {
 		return nil, ErrNilDBLabel
 	}
 
-	newHeader := NewDatabaseHeader(label) // Construct the database header
+	newHeader, err := NewDatabaseHeader(label) // Construct the database header
+	if err != nil {
+		return nil, err
+	}
 
 	// Construct the shard itself
 	newShardDB := &ShardDB{
