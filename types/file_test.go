@@ -1,13 +1,20 @@
 package types
 
-import "testing"
+import (
+	"io/ioutil"
+	"testing"
+)
 
 func TestNewFile(t *testing.T) {
-	filename := "testFilename"
-	shardCount := 19
-	var size uint32 = 10000 // 10 KB
+	filename := "./data/testFilename"
 
-	file, err := NewFile(filename, shardCount, size)
+	testData := []byte("hello\ngo\n")
+	err := ioutil.WriteFile(filename, testData, 0644)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	file, err := NewFile(filename)
 	if err != nil {
 		t.Fatal(err)
 	}
