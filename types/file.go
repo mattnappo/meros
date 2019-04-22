@@ -3,6 +3,7 @@ package types
 import (
 	"encoding/json"
 	"errors"
+	"os"
 
 	"github.com/xoreo/meros/common"
 	"github.com/xoreo/meros/crypto"
@@ -29,21 +30,32 @@ type File struct {
 }
 
 // NewFile constructs a new file
-func NewFile(filename string, shardCount int, size uint32) (*File, error) {
+func NewFile(filename string) (*File, error) {
 	// Check that the filename is not nil
 	if filename == "" {
 		return nil, ErrNilFilename
 	}
 
-	// Check that the shard count is not nil
-	if shardCount == 0 {
-		return nil, ErrNilShardCount
+	// Open the file
+	f, err := os.Open(filename)
+	if err != nil {
+		return nil, err
 	}
+	defer f.Close()
 
-	// Check that the file size is not nil
-	if size == 0 {
-		return nil, ErrNilFileSize
+	// Get the file length and bytes
+	fileStat, err := f.Stat()
+	if err != nil {
+		return nil, err
 	}
+	size := uint32(fileStat.Size())
+	// dat, err := ioutil.ReadFile(".randomfile")
+	// if err != nil {
+	// 	fmt.Print(string(dat))
+
+	// }
+
+	shardCount := common.ShardCount
 
 	// Create a new file pointer
 	file := &File{
