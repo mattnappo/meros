@@ -5,10 +5,10 @@ import (
 	"path/filepath"
 )
 
-// ShardCount is amount of shards a file should be split into
+// ShardCount is amount of shards a file should be split into.
 const ShardCount int = 10
 
-// CreateDirIfDoesNotExist creates a directory if it does not already exist
+// CreateDirIfDoesNotExist creates a directory if it does not already exist.
 func CreateDirIfDoesNotExist(dir string) error {
 	dir = filepath.FromSlash(dir)
 	if _, err := os.Stat(dir); os.IsNotExist(err) {

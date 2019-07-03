@@ -12,15 +12,15 @@ import (
 )
 
 var (
-	// ErrNilBytes is thrown when a shard is constructed when given nil bytes
+	// ErrNilBytes is thrown when a shard is constructed when given nil bytes.
 	ErrNilBytes = errors.New("bytes to construct new shard must not be nil")
 
-	// ErrCannotCalculateShardSizes is thrown when the []byte to a CalculateShardSizes call is nil
+	// ErrCannotCalculateShardSizes is thrown when the []byte to a CalculateShardSizes call is nil.
 	ErrCannotCalculateShardSizes = errors.New("bytes to calculate shard sizes must not be nil")
 )
 
 // Shard is a struct that holds a piece of data that is
-// a part of another, bigger piece of data
+// a part of another, bigger piece of data.
 type Shard struct {
 	Size      uint32      `json:"size"`      // The size of the shard
 	Bytes     []byte      `json:"bytes"`     // The actual data of the shard
@@ -28,7 +28,7 @@ type Shard struct {
 	Timestamp string      `json:"timestamp"` // The timestamp of the shard
 }
 
-// NewShard attempts to construct a new shard
+// NewShard attempts to construct a new shard.
 func NewShard(bytes []byte) (*Shard, error) {
 	if bytes == nil {
 		return nil, ErrNilBytes
@@ -45,7 +45,7 @@ func NewShard(bytes []byte) (*Shard, error) {
 	return newShard, nil
 }
 
-// CalculateShardSizes determines the recommended size of each shard
+// CalculateShardSizes determines the recommended size of each shard.
 func CalculateShardSizes(raw []byte, n int) ([]uint32, error) {
 	rawSize := len(raw)
 
@@ -111,13 +111,13 @@ func (shard *Shard) String() string {
 	return string(json)
 }
 
-// Serialize serializes a Shard pointer to bytes
+// Serialize serializes a Shard pointer to bytes.
 func (shard *Shard) Serialize() []byte {
 	json, _ := json.MarshalIndent(*shard, "", "  ")
 	return json
 }
 
-// Validate makes sure that the shard is valid
+// Validate makes sure that the shard is valid.
 func (shard *Shard) Validate() bool {
 	if crypto.Sha3((*shard).Bytes) == (*shard).Hash {
 		return true
@@ -125,7 +125,7 @@ func (shard *Shard) Validate() bool {
 	return false
 }
 
-// ShardFromBytes constructs a *Shard from bytes
+// ShardFromBytes constructs a *Shard from bytes.
 func ShardFromBytes(b []byte) (*Shard, error) {
 	buffer := &Shard{}
 	err := json.Unmarshal(b, buffer)

@@ -10,17 +10,17 @@ import (
 )
 
 var (
-	// ErrNilFilename is returned when the fileame to construct a new file is nil
+	// ErrNilFilename is returned when the fileame to construct a new file is nil.
 	ErrNilFilename = errors.New("filename to construct file must not be nil")
 
-	// ErrNilShardCount is returned when the shard counnt to cosntruct a new file is nil
+	// ErrNilShardCount is returned when the shard counnt to cosntruct a new file is nil.
 	ErrNilShardCount = errors.New("shard count to cosntruct file must not be nil")
 
-	// ErrNilFileSize is returned when the file size to construct a new file is nil
+	// ErrNilFileSize is returned when the file size to construct a new file is nil.
 	ErrNilFileSize = errors.New("file size to construct file must not be nil")
 )
 
-// File contains the (important) metadata of a file stored in a database
+// File contains the (important) metadata of a file stored in a database.
 type File struct {
 	Filename   string      `json:"filename"`   // The file's filename
 	ShardCount int         `json:"shardCount"` // The number of shards hosting the file
@@ -29,7 +29,7 @@ type File struct {
 	Hash       common.Hash `json:"hash"`       // The hash of the file
 }
 
-// NewFile constructs a new file
+// NewFile constructs a new file.
 func NewFile(filename string) (*File, error) {
 	// Check that the filename is not nil
 	if filename == "" {
@@ -72,13 +72,13 @@ func NewFile(filename string) (*File, error) {
 
 /* ----- BEGIN HELPER FUNCTIONS ----- */
 
-// Bytes converts the database header to bytes
+// Bytes converts the database header to bytes.
 func (file *File) Bytes() []byte {
 	json, _ := json.MarshalIndent(*file, "", "  ")
 	return json
 }
 
-// String converts the database to a string
+// String converts the database to a string.
 func (file *File) String() string {
 	json, _ := json.MarshalIndent(*file, "", "  ")
 	return string(json)

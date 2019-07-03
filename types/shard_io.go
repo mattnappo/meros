@@ -10,10 +10,10 @@ import (
 	"github.com/xoreo/meros/common"
 )
 
-// ErrInvalidShard is returned when a shard's hash is not valid when loading from memory
+// ErrInvalidShard is returned when a shard's hash is not valid when loading from memory.
 var ErrInvalidShard = errors.New("shard from memory is not valid")
 
-// WriteShardToMemory writes a shard to memory
+// WriteShardToMemory writes a shard to memory.
 func (shard *Shard) WriteShardToMemory() error {
 	bytes := shard.Serialize()
 
@@ -35,7 +35,7 @@ func (shard *Shard) WriteShardToMemory() error {
 	return nil
 }
 
-// ReadShardFromMemory reads a shard from memory
+// ReadShardFromMemory reads a shard from memory.
 func ReadShardFromMemory(hash string) (*Shard, error) {
 	// Read the file from memory
 	data, err := ioutil.ReadFile(fmt.Sprintf("data/shards/shard_%s.json", hash))
