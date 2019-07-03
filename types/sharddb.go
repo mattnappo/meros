@@ -6,10 +6,8 @@ import (
 	"github.com/boltdb/bolt"
 )
 
-var (
-	// ErrNilDBLabel is returned when a nil label is given.
-	ErrNilDBLabel = errors.New("label for creating a shard database header must not be nil")
-)
+// ErrNilDBLabel is returned when a nil label is given.
+var ErrNilDBLabel = errors.New("label for creating a shard database header must not be nil")
 
 // ShardDB is the database that holds the locations of each shard of a (larger) file.
 type ShardDB struct {
