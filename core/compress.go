@@ -2,35 +2,35 @@ package core
 
 import (
 	"bytes"
-	"compress/zlib"
-	"fmt"
+	"compress/flate"
 	"io"
-	"os"
 )
 
-// CompressBytes compresses a given []byte using compress/zlib.
-func CompressBytes(rawBytes []byte) (*bytes.Buffer, error) {
-	var buffer bytes.Buffer           // Init the buffer
-	writer := zlib.NewWriter(&buffer) // Create the writer
-
-	_, err := writer.Write(rawBytes) // Compress the bytes
-	if err != nil {
-		return nil, err
-	}
-
-	writer.Close() // Close the writer
-
-	return &buffer, nil // Return the bytes
+// CompressBytes returns a compressed byte slice.
+func CompressBytes(src []byte) []byte {
+	compressedData := new(bytes.Buffer)
+	compress(src, compressedData, -2)
+	return compressedData.Bytes()
 }
 
-// DecompressBytes decompresses bytes given a []byte containing previously compressed bytes.
-func DecompressBytes(rawBytes *bytes.Buffer) ([]byte, error) {
-	r, err := zlib.NewReader(rawBytes)
-	if err != nil {
-		return nil, err
-	}
-	io.Copy(os.Stdout, r)
-	r.Close()
-	fmt.Printf("%x\n", r)
-	return []byte(""), nil
+// DecompressBytes returns a decompressed byte slice.
+func DecompressBytes(src []byte) []byte {
+	compressedData := bytes.NewBuffer(src)
+	deCompressedData := new(bytes.Buffer)
+	decompress(compressedData, deCompressedData)
+	return deCompressedData.Bytes()
+}
+
+// compress uses flate to compress a byte slice to a corresponding level.
+func compress(src []byte, dest io.Writer, level int) {
+	compressor, _ := flate.NewWriter(dest, level)
+	compressor.Write(src)
+	compressor.Close()
+}
+
+// compress uses flate to decompress an io.Reader.
+func decompress(src io.Reader, dest io.Writer) {
+	decompressor := flate.NewReader(src)
+	io.Copy(dest, decompressor)
+	decompressor.Close()
 }
