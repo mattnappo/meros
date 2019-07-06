@@ -6,18 +6,16 @@ import (
 	"github.com/boltdb/bolt"
 )
 
-var (
-	// ErrNilDBLabel is returned when a nil label is given
-	ErrNilDBLabel = errors.New("label for creating a shard database header must not be nil")
-)
+// ErrNilDBLabel is returned when a nil label is given.
+var ErrNilDBLabel = errors.New("label for creating a shard database header must not be nil")
 
-// ShardDB is the database that holds the locations of each shard of a (larger) file
+// ShardDB is the database that holds the locations of each shard of a (larger) file.
 type ShardDB struct {
 	Header *DatabaseHeader `json:"header"`
 	DB     *bolt.DB        `json:"db"`
 }
 
-// NewShardDB constructs a new database of shards
+// NewShardDB constructs a new database of shards.
 func NewShardDB(label string) (*ShardDB, error) {
 	// Check for valid label
 	if label == "" {

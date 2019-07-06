@@ -3,23 +3,24 @@ package types
 import (
 	"encoding/json"
 	"errors"
+	"os"
 
 	"github.com/xoreo/meros/common"
 	"github.com/xoreo/meros/crypto"
 )
 
 var (
-	// ErrNilFilename is returned when the fileame to construct a new file is nil
+	// ErrNilFilename is returned when the fileame to construct a new file is nil.
 	ErrNilFilename = errors.New("filename to construct file must not be nil")
 
-	// ErrNilShardCount is returned when the shard counnt to cosntruct a new file is nil
+	// ErrNilShardCount is returned when the shard counnt to cosntruct a new file is nil.
 	ErrNilShardCount = errors.New("shard count to cosntruct file must not be nil")
 
-	// ErrNilFileSize is returned when the file size to construct a new file is nil
+	// ErrNilFileSize is returned when the file size to construct a new file is nil.
 	ErrNilFileSize = errors.New("file size to construct file must not be nil")
 )
 
-// File contains the (important) metadata of a file stored in a database
+// File contains the (important) metadata of a file stored in a database.
 type File struct {
 	Filename   string      `json:"filename"`   // The file's filename
 	ShardCount int         `json:"shardCount"` // The number of shards hosting the file
@@ -28,29 +29,49 @@ type File struct {
 	Hash       common.Hash `json:"hash"`       // The hash of the file
 }
 
-// NewFile constructs a new file
-func NewFile(filename string, shardCount int, size uint32) (*File, error) {
+// NewFile constructs a new file from a file in memory.
+func NewFile(filename string) (*File, error) {
 	// Check that the filename is not nil
 	if filename == "" {
 		return nil, ErrNilFilename
 	}
 
-	// Check that the shard count is not nil
-	if shardCount == 0 {
-		return nil, ErrNilShardCount
+	// Open the file
+	f, err := os.Open(filename)
+	if err != nil {
+		return nil, err
+	}
+	defer f.Close()
+
+	// Get the file length and bytes
+	fileStat, err := f.Stat()
+	if err != nil {
+		return nil, err
+	}
+	size := uint32(fileStat.Size())
+
+	// Read from the file
+	bytes := make([]byte, common.MaxFileSize)
+	_, err = f.Read(bytes)
+	if err != nil {
+		return nil, err
 	}
 
-	// Check that the file size is not nil
-	if size == 0 {
-		return nil, ErrNilFileSize
+	// Create the shardDB
+	label := filename + "_" + crypto.Sha3(bytes).String()[8:]
+	shardDB, err := NewShardDB(label, bytes)
+	if err != nil {
+		return nil, err
 	}
+
+	shardCount := common.ShardCount
 
 	// Create a new file pointer
 	file := &File{
 		Filename:   filename,   // The filename
 		ShardCount: shardCount, // The total amount of shards hostinng the file
-		Size:       size,
-		ShardDB:    nil,
+		Size:       size,       // The total size of the file
+		ShardDB:    shardDB,    // The pointer to the (soon to be networked) database of shards
 	}
 
 	// Compute the hash of the file
@@ -60,13 +81,13 @@ func NewFile(filename string, shardCount int, size uint32) (*File, error) {
 
 /* ----- BEGIN HELPER FUNCTIONS ----- */
 
-// Bytes converts the database header to bytes
+// Bytes converts the database header to bytes.
 func (file *File) Bytes() []byte {
 	json, _ := json.MarshalIndent(*file, "", "  ")
 	return json
 }
 
-// String converts the database to a string
+// String converts the database to a string.
 func (file *File) String() string {
 	json, _ := json.MarshalIndent(*file, "", "  ")
 	return string(json)

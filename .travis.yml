@@ -1,31 +1,40 @@
+# This travis file comes from github.com/summercash/go-summercash
 language: go
 
-go:
-  - 1.12
-  - master
-
-install: true
-sudo: false
-
-matrix:
-  allow_failures:
-    - go: master
-  fast_finish: true
+env:
+  global:
+  - GO111MODULE=on
 
 notifications:
   email: false
 
-before_install:
-  - export GO111MODULE=on # Enable go mod
-  - go mod init # Init go modules
-  - go mod vendor # Download deps
+install:
+  - export GO111MODULE=on
+  - go get -u
 
-before_script:
-  - GO_FILES=$(find . -iname '*.go' -type f | grep -v -r ./vendor/) # All the .go files, excluding vendor/, .vendor-new/
-  # For .vendor-new inclusion, GO_FILES=$(find . -iname '*.go' -type f | grep -v -r ./vendor/ ./.vendor-new/)
-  - go get
-script:
-  - test -z $(gofmt -s -l $GO_FILES) # Fail if a .go file hasn't been formatted with gofmt
-  - go vet ./... # Go vet is the official Go static analyzer
-  - chmod +x ./test.sh && ./test.sh # Run unit tests
-  - go build # Build
+install: true
+
+jobs:
+  include:
+    - stage: validate
+      name: "lint"
+      script:
+        - chmod +x ./scripts/validate_lint.sh # Make validate lint executable
+        - ./scripts/validate_lint.sh # Validate lint
+    - name: "vet"
+      script:
+        - go vet ./... # Run static analyzer
+    - name: "gofmt"
+      script:
+        - cd $(mktemp -d); go mod init tmp; go get mvdan.cc/gofumpt; cd $TRAVIS_BUILD_DIR
+        - git diff --quiet || (echo "\033[0;31mWorking directory not clean!\033[0m" && exit 1) # Check working dir clean
+        - gofumpt -w -s . # Fmt
+    - name: "tidy"
+      script:
+        - git diff --quiet || (echo "\033[0;31mWorking directory not clean!\033[0m" && exit 1) # Check working dir clean
+        - go mod tidy # Tidy
+    - stage: test
+      name: "test"
+      script:
+        - go run main.go # Run main
+        - chmod +x ./scripts/test.sh && ./scripts/test.sh # Run unit tests

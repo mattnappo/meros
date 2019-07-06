@@ -7,7 +7,7 @@ import (
 	"golang.org/x/crypto/sha3"
 )
 
-// Sha3 hashes a []byte using sha3
+// Sha3 hashes a []byte using sha3.
 func Sha3(b []byte) common.Hash {
 	hash := sha3.New256()
 	hash.Write(b)

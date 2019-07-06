@@ -3,6 +3,8 @@
 data/
 .DS_STORE
 counter.py
+TODO
+*.db
 
 # Prerequisites
 *.d
