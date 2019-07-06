@@ -29,7 +29,7 @@ type File struct {
 	Hash       common.Hash `json:"hash"`       // The hash of the file
 }
 
-// NewFile constructs a new file.
+// NewFile constructs a new file from a file in memory.
 func NewFile(filename string) (*File, error) {
 	// Check that the filename is not nil
 	if filename == "" {
@@ -49,11 +49,20 @@ func NewFile(filename string) (*File, error) {
 		return nil, err
 	}
 	size := uint32(fileStat.Size())
-	// dat, err := ioutil.ReadFile(".randomfile")
-	// if err != nil {
-	// 	fmt.Print(string(dat))
 
-	// }
+	// Read from the file
+	bytes := make([]byte, common.MaxFileSize)
+	_, err = f.Read(bytes)
+	if err != nil {
+		return nil, err
+	}
+
+	// Create the shardDB
+	label := filename + "_" + crypto.Sha3(bytes).String()[8:]
+	shardDB, err := NewShardDB(label, bytes)
+	if err != nil {
+		return nil, err
+	}
 
 	shardCount := common.ShardCount
 
@@ -61,8 +70,8 @@ func NewFile(filename string) (*File, error) {
 	file := &File{
 		Filename:   filename,   // The filename
 		ShardCount: shardCount, // The total amount of shards hostinng the file
-		Size:       size,
-		ShardDB:    nil,
+		Size:       size,       // The total size of the file
+		ShardDB:    shardDB,    // The pointer to the (soon to be networked) database of shards
 	}
 
 	// Compute the hash of the file
