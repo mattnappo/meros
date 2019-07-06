@@ -5,6 +5,7 @@ import (
 	"errors"
 	"os"
 
+	"github.com/xoreo/meros/core"
 	"github.com/xoreo/meros/crypto"
 	"github.com/xoreo/meros/models"
 )
@@ -62,10 +63,11 @@ func NewFile(filename string) (*File, error) {
 	}
 
 	// Compress the data
-	// Encrypt the data
+	bytes = core.CompressBytes(bytes)
+	// Encrypt the data (implement later)
 
 	// Create the shardDB
-	label := filename + "_" + crypto.Sha3(bytes).String()[8:]
+	label := filename + "_" + crypto.Sha3(bytes).String()[:8]
 	shardDB, err := NewShardDB(label, bytes)
 	if err != nil {
 		return nil, err

@@ -5,6 +5,7 @@ data/
 counter.py
 TODO
 *.db
+*.pem
 
 # Prerequisites
 *.d
