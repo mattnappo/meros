@@ -3,6 +3,7 @@ package types
 import (
 	"errors"
 
+	"github.com/libp2p/go-libp2p-core/peer"
 	"github.com/xoreo/meros/models"
 )
 
@@ -17,7 +18,7 @@ var ErrNilDBLabel = errors.New("label for creating a shard database header must 
 // ShardDB is the database that holds the locations of each shard of a (larger) file.
 type ShardDB struct {
 	Header *DatabaseHeader    `json:"header"` // The database header contains some DB metadata.
-	Shards map[*NodeID]*Shard `json:"shards"` // The shards themselves. Eventually, this will be a BoltDB.
+	Shards map[peer.ID]*Shard `json:"shards"` // The shards themselves. Eventually, this will be a BoltDB.
 }
 
 // NewShardDB constructs a new database of shards.
@@ -43,12 +44,14 @@ func NewShardDB(label string, bytes []byte) (*ShardDB, error) {
 		return nil, err
 	}
 
+	shardMap := make(map[peer.ID]*Shard)
+
 	// Find online peers, put node addresses as keys in map and shards as values
 
 	// Construct the shard itself
 	newShardDB := &ShardDB{
 		Header: newHeader,
-		Shards: make(map[*NodeID]*Shard),
+		Shards: shardMap,
 	}
 
 	return newShardDB, nil
