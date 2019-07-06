@@ -49,9 +49,12 @@ func NewFile(filename string) (*File, error) {
 		return nil, err
 	}
 	size := uint32(fileStat.Size())
+	if size == 0 {
+		return nil, ErrNilFileSize
+	}
 
 	// Read from the file
-	bytes := make([]byte, common.MaxFileSize)
+	bytes := make([]byte, size)
 	_, err = f.Read(bytes)
 	if err != nil {
 		return nil, err

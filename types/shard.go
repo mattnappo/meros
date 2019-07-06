@@ -66,7 +66,7 @@ func CalculateShardSizes(raw []byte, n int) ([]uint32, error) {
 
 	// Adjust for the left over bytes
 	if modulo+partitionSize >= partitionSize*uint32(n) {
-
+		// This will be optimized eventually
 	}
 
 	sizes[n-1] += modulo // Add the left over bytes to the last element
