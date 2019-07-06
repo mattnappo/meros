@@ -5,8 +5,8 @@ import (
 	"errors"
 	"os"
 
-	"github.com/xoreo/meros/common"
 	"github.com/xoreo/meros/crypto"
+	"github.com/xoreo/meros/models"
 )
 
 var (
@@ -26,7 +26,7 @@ type File struct {
 	ShardCount int         `json:"shardCount"` // The number of shards hosting the file
 	Size       uint32      `json:"size"`       // The total size of the file
 	ShardDB    *ShardDB    `json:"shardDB"`    // The pointer to the ShardDB, the place where the locations of the shards are stored
-	Hash       common.Hash `json:"hash"`       // The hash of the file
+	Hash       crypto.Hash `json:"hash"`       // The hash of the file
 }
 
 // NewFile constructs a new file from a file in memory.
@@ -48,6 +48,7 @@ func NewFile(filename string) (*File, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	size := uint32(fileStat.Size())
 	if size == 0 {
 		return nil, ErrNilFileSize
@@ -60,6 +61,9 @@ func NewFile(filename string) (*File, error) {
 		return nil, err
 	}
 
+	// Compress the data
+	// Encrypt the data
+
 	// Create the shardDB
 	label := filename + "_" + crypto.Sha3(bytes).String()[8:]
 	shardDB, err := NewShardDB(label, bytes)
@@ -67,7 +71,7 @@ func NewFile(filename string) (*File, error) {
 		return nil, err
 	}
 
-	shardCount := common.ShardCount
+	shardCount := models.ShardCount
 
 	// Create a new file pointer
 	file := &File{

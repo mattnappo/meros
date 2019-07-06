@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"time"
 
-	"github.com/xoreo/meros/common"
 	"github.com/xoreo/meros/crypto"
 )
 
@@ -12,7 +11,7 @@ import (
 type DatabaseHeader struct {
 	Label   string      `json:"label"`   // A database label
 	Created string      `json:"created"` // The time that the database was created
-	Hash    common.Hash `json:"hash"`    // The hash of the database header
+	Hash    crypto.Hash `json:"hash"`    // The hash of the database header
 }
 
 // NewDatabaseHeader creates a new database header.

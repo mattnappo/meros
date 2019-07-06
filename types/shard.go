@@ -6,7 +6,6 @@ import (
 	"math"
 	"time"
 
-	"github.com/xoreo/meros/common"
 	"github.com/xoreo/meros/core"
 	"github.com/xoreo/meros/crypto"
 )
@@ -24,7 +23,7 @@ var (
 type Shard struct {
 	Size      uint32      `json:"size"`      // The size of the shard
 	Bytes     []byte      `json:"bytes"`     // The actual data of the shard
-	Hash      common.Hash `json:"hash"`      // The hash of the shard
+	Hash      crypto.Hash `json:"hash"`      // The hash of the shard
 	Timestamp string      `json:"timestamp"` // The timestamp of the shard
 }
 

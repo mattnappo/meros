@@ -3,7 +3,7 @@ package types
 import (
 	"errors"
 
-	"github.com/xoreo/meros/common"
+	"github.com/xoreo/meros/models"
 )
 
 // ErrNilDBLabel is returned when a nil label is given.
@@ -38,7 +38,7 @@ func NewShardDB(label string, bytes []byte) (*ShardDB, error) {
 	}
 
 	// Generate the actual shards
-	shards, err := GenerateShards(bytes, common.ShardCount)
+	shards, err := GenerateShards(bytes, models.ShardCount)
 	if err != nil {
 		return nil, err
 	}
