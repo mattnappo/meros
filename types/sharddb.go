@@ -56,3 +56,15 @@ func NewShardDB(label string, bytes []byte) (*ShardDB, error) {
 
 	return newShardDB, nil
 }
+
+// PopulateShardAddresses populates the addresses within the Shards map with peer addresses on the network.
+func (shardDB *ShardDB) PopulateShardAddresses() error {
+
+	return nil
+}
+
+// DistributeShards distributes the shards across the network.
+func (shardDB *ShardDB) DistributeShards() error {
+
+	return nil
+}
