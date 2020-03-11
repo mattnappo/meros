@@ -1,4 +1,4 @@
-package filedb
+package types
 
 import (
 	"encoding/json"
@@ -25,7 +25,8 @@ type FileDB struct {
 // Open opens the database for reading and writing. Creates a new DB if one
 // with that name does not already exist.
 func Open(dbName string) (*FileDB, error) {
-	err := common.CreateDirIfDoesNotExist(path.Join(models.FileDBPath, dbName)) // Make sure path exists
+	// Make sure path exists
+	err := common.CreateDirIfDoesNotExist(path.Join(models.FileDBPath, dbName))
 	if err != nil {
 		return nil, err
 	}
@@ -62,7 +63,8 @@ func Open(dbName string) (*FileDB, error) {
 	// Prepare to serizlize the FileDB struct
 	filedbPath := path.Join(models.FileDBPath, dbName, "db.json")
 	if _, err := os.Stat(filedbPath); err != nil {
-		fileDB.serialize(filedbPath) // Serizlize the FileDB struct if it does not already exist
+		// Write the FileDB struct to disk if it does not already exist
+		fileDB.serialize(filedbPath)
 	}
 
 	return fileDB, nil

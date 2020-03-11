@@ -1,4 +1,4 @@
-package filedb
+package types
 
 import "testing"
 
