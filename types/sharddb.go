@@ -3,7 +3,7 @@ package types
 import (
 	"errors"
 
-	"github.com/boltdb/bolt"
+	"github.com/xoreo/meros/types"
 )
 
 // errNilDBLabel is returned when a nil label is given.
@@ -11,28 +11,24 @@ var errNilDBLabel = errors.New("label for creating a shard database header must 
 
 // shardDB is the database that holds the locations of each shard of a (larger) file.
 type shardDB struct {
-	DB *bolt.DB // BoltDB instance (shard map)
+	header DatabaseHeader        // Database header
+	shards map[shardID]shardData // Shard data map
 
-	Open bool // DB status
+	hash Crypto.Hash // Hash of the entire database
 }
 
-// newShardDB constructs a new database of shards.
-func newShardDB(shards []Shard) (*shardDB, error) {
+// generateShardDB constructs a new database of shards.
+func generateShardDB(shards []Shard) (*shardDB, error) {
+	// Construct the map
+	for shard, i := range shards {
+
+	}
 
 	// Construct the database
-	newShardDB := &shardDB{db, true}
+	sharddb := &shardDB{
+		types.NewDatabaseHeader(""), // Generate and set the header
 
-	return newShardDB, nil
-}
+	}
 
-// populateShardAddresses populates the addresses within the Shards map with peer addresses on the network.
-func (shardDB *shardDB) populateShardAddresses() error {
-
-	return nil
-}
-
-// distributeShards distributes the shards across the network.
-func (shardDB *shardDB) distributeShards() error {
-
-	return nil
+	return sharddb, nil
 }

@@ -2,14 +2,10 @@ package types
 
 import (
 	"encoding/json"
-	"errors"
 	"time"
 
 	"github.com/xoreo/meros/crypto"
 )
-
-// ErrNilDBLabel is returned when a nil label is given.
-var ErrNilDBLabel = errors.New("label for creating a shard database header must not be nil")
 
 // DatabaseHeader is the identifier for a database.
 type DatabaseHeader struct {
@@ -20,11 +16,6 @@ type DatabaseHeader struct {
 
 // NewDatabaseHeader creates a new database header.
 func NewDatabaseHeader(label string) (DatabaseHeader, error) {
-	// Check that the label is not nil
-	if label == "" {
-		return DatabaseHeader{}, ErrNilDBLabel
-	}
-
 	// Create the header
 	newDatabaseHeader := DatabaseHeader{
 		Label:   label,

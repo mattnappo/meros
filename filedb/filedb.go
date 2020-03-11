@@ -51,16 +51,11 @@ func Open(dbName string) (*FileDB, error) {
 	// Prepare to serizlize the FileDB struct
 	filedbPath := path.Join(models.FileDBPath, dbName, "db.json")
 	if _, err := os.Stat(filedbPath); err != nil { // If DB name does not exist
-		// Generate header info
-		header, err := types.NewDatabaseHeader(dbName)
-		if err != nil {
-			return nil, err
-		}
-
 		// Create the fileDB struct
 		fileDB = &FileDB{
-			Header: header, // Set the header
-			Name:   dbName, // Set the name
+			Header: types.NewDatabaseHeader(dbName), // Generate and set the header
+
+			Name: dbName, // Set the name
 		}
 
 		fileDB.serialize(filedbPath) // Write the FileDB struct to disk
