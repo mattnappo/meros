@@ -38,3 +38,14 @@ func Open() (*FileDB, error) {
 
 	return fileDB, nil
 }
+
+// Close closes the database.
+func (filedb *FileDB) Close() error {
+	err := filedb.DB.Close() // Close the DB
+	if err != nil {
+		return err
+	}
+
+	filedb.Open = false // Set DB status
+	return nil
+}
