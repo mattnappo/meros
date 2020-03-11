@@ -1,11 +1,15 @@
-package types
+package filedb
 
 import (
 	"encoding/json"
+	"errors"
 	"time"
 
 	"github.com/xoreo/meros/crypto"
 )
+
+// ErrNilDBLabel is returned when a nil label is given.
+var ErrNilDBLabel = errors.New("label for creating a shard database header must not be nil")
 
 // DatabaseHeader is the identifier for a database.
 type DatabaseHeader struct {
