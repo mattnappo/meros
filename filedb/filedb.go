@@ -2,6 +2,7 @@ package filedb
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"os"
 	"path"
@@ -63,7 +64,10 @@ func Open(dbName string) (*FileDB, error) {
 		fileDB.serialize(filedbPath) // Write the FileDB struct to disk
 	} else {
 		// If the db does exist, read from it and return it
-		fileDB, error = deserialize(filedbPath)
+		fileDB, err = deserialize(filedbPath)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	// Prepare to open the bolt database
@@ -106,5 +110,37 @@ func (filedb *FileDB) serialize(filepath string) error {
 
 func deserialize(filepath string) (*FileDB, error) {
 	data, err := ioutil.ReadFile(filepath) // Read the file from disk
+	if err != nil {
+		return nil, err
+	}
 
+	buffer := &FileDB{} // Initialize a buffer
+
+	// Read(write) into the buffer
+	err = json.Unmarshal(data, buffer)
+
+	return buffer, err
+}
+
+// ReadShardFromMemory reads a shard from memory.
+func ReadShardFromMemory(hash string) (*Shard, error) {
+	// Read the file from memory
+	data, err := ioutil.ReadFile(fmt.Sprintf("data/shards/shard_%s.json", hash))
+	if err != nil {
+		return nil, err
+	}
+
+	buffer := &Shard{} // Init a shard buffer
+
+	// Read into the buffer
+	err = json.Unmarshal(data, buffer)
+	if err != nil {
+		return nil, err
+	}
+
+	if (*buffer).Validate() == false {
+		return nil, ErrInvalidShard
+	}
+
+	return buffer, nil // Return the shard pointer
 }
