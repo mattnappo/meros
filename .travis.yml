@@ -18,7 +18,7 @@ install:
 install: true
 script:
   - go mod init
-  
+
 jobs:
   include:
     - stage: validate
@@ -28,6 +28,7 @@ jobs:
         - ./scripts/validate_lint.sh # Validate lint
     - name: "vet"
       script:
+        - go mod init
         - go vet ./... # Run static analyzer
     - name: "gofmt"
       script:
