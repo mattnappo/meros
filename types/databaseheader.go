@@ -15,7 +15,7 @@ type DatabaseHeader struct {
 }
 
 // NewDatabaseHeader creates a new database header.
-func NewDatabaseHeader(label string) (DatabaseHeader, error) {
+func NewDatabaseHeader(label string) DatabaseHeader {
 	// Create the header
 	newDatabaseHeader := DatabaseHeader{
 		Label:   label,
@@ -24,7 +24,7 @@ func NewDatabaseHeader(label string) (DatabaseHeader, error) {
 
 	// Compute the header hash and return
 	newDatabaseHeader.Hash = crypto.Sha3(newDatabaseHeader.Bytes())
-	return newDatabaseHeader, nil
+	return newDatabaseHeader
 }
 
 /* ----- BEGIN HELPER FUNCTIONS ----- */

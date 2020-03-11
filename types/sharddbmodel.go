@@ -14,10 +14,6 @@ type shardData struct {
 	Size   uint32 `json:"size"`    // The size in bytes of the shard
 }
 
-func calculateShardID(shard Shard) shardID {
-
-}
-
 // generateShardEntry generates a shardID-shardData pair.
 func generateShardEntry(shard Shard, index int, nodeID NodeID) (shardID, shardData) {
 	shardData := shardData{
@@ -25,7 +21,6 @@ func generateShardEntry(shard Shard, index int, nodeID NodeID) (shardID, shardDa
 		NodeID: nodeID,     // Set the NodeID
 		Size:   shard.Size, // Get and set the size
 	}
-	shardid := calculateShardID(shard) // Calculate the shardID of the shard
 
-	return shardid, shardData // Return the pair
+	return shardID(shard.Hash), shardData // Return the pair
 }
