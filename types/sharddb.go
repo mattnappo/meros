@@ -3,7 +3,8 @@ package types
 import (
 	"errors"
 
-	"github.com/xoreo/meros/types"
+	"github.com/libp2p/go-libp2p-core/peer"
+	"github.com/xoreo/meros/crypto"
 )
 
 // errNilDBLabel is returned when a nil label is given.
@@ -14,20 +15,23 @@ type shardDB struct {
 	header DatabaseHeader        // Database header
 	shards map[shardID]shardData // Shard data map
 
-	hash Crypto.Hash // Hash of the entire database
+	hash crypto.Hash // Hash of the entire database
 }
 
-// generateShardDB constructs a new database of shards.
-func generateShardDB(shards []Shard) (*shardDB, error) {
+// generateShardDB constructs a new shard database.
+func generateShardDB(shards []Shard, nodeIDs []NodeID) (*shardDB, error) {
 	// Construct the map
-	for shard, i := range shards {
+	shardMap := make(map[peer.ID]*Shard)
 
+	// Generate and add shard data to the map
+	for shard, i := range shards {
+		id, data := generateShardEntry(shard)
 	}
 
 	// Construct the database
 	sharddb := &shardDB{
-		types.NewDatabaseHeader(""), // Generate and set the header
-
+		NewDatabaseHeader(""), // Generate and set the header
+		shardMap,              // Set the shardMap
 	}
 
 	return sharddb, nil
