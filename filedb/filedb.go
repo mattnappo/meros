@@ -46,15 +46,6 @@ func Open(dbName string) (*FileDB, error) {
 			- other_data_info/
 	*/
 
-	// Prepare to open the bolt database
-	boltdbPath := path.Join(models.FileDBPath, dbName, "bolt.db")
-	db, err := bolt.Open(boltdbPath, 0600, &bolt.Options{ // Open the DB
-		Timeout: 1 * time.Second,
-	})
-	if err != nil {
-		return nil, err
-	}
-
 	var fileDB *FileDB // The fileDB to return
 
 	// Prepare to serizlize the FileDB struct
@@ -67,12 +58,25 @@ func Open(dbName string) (*FileDB, error) {
 		fileDB = &FileDB{
 			Header: header,
 			Name:   dbName,
-			DB:     db, // Set the DB
-			Open:   true,
 		}
 
 		fileDB.serialize(filedbPath) // Write the FileDB struct to disk
+	} else {
+		// If the db does exist, read from it and return it
+		fileDB, error = deserialize(filedbPath)
 	}
+
+	// Prepare to open the bolt database
+	boltdbPath := path.Join(models.FileDBPath, dbName, "bolt.db")
+	db, err := bolt.Open(boltdbPath, 0600, &bolt.Options{ // Open the DB
+		Timeout: 1 * time.Second,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	fileDB.DB = db     // Set the DB
+	fileDB.Open = true // Set the status to open
 
 	return fileDB, nil
 }
@@ -98,4 +102,9 @@ func (filedb *FileDB) serialize(filepath string) error {
 	json, _ := json.MarshalIndent(*filedb, "", "  ")
 	err := ioutil.WriteFile(filepath, json, 0600)
 	return err
+}
+
+func deserialize(filepath string) (*FileDB, error) {
+	data, err := ioutil.ReadFile(filepath) // Read the file from disk
+
 }
