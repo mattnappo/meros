@@ -45,9 +45,9 @@ func NewShard(bytes []byte) (*Shard, error) {
 }
 
 // GenerateShards generates a slice of shards given a string of bytes
-// This function is a wrapper function. It does not do anything unique.
-func GenerateShards(bytes []byte, n int) ([]*Shard, error) {
-	var shards []*Shard // Init the shard slice
+// This is an interface/api function.
+func GenerateShards(bytes []byte, n int) ([]Shard, error) {
+	var shards []Shard // Init the shard slice
 
 	shardSizes, err := calculateShardSizes(bytes, n) // Calculate the shard sizes
 	if err != nil {
@@ -68,7 +68,7 @@ func GenerateShards(bytes []byte, n int) ([]*Shard, error) {
 		if err != nil { // Check error
 			return nil, err
 		}
-		shards = append(shards, newShard) // Append the new shard to the shard slice
+		shards = append(shards, *newShard) // Append the new shard to the shard slice
 	}
 
 	return shards, nil

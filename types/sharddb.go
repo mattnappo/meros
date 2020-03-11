@@ -18,14 +18,18 @@ type shardDB struct {
 }
 
 // generateShardDB constructs a new shard database.
-func generateShardDB(shards []Shard, nodeIDs []NodeID) (shardDB, error) {
+func generateShardDB(shards []Shard, nodes []NodeID) (shardDB, error) {
+	if len(shards) != len(nodes) {
+		return shardDB{}, errors.New("shard count and node count do not match")
+	}
+
 	// Construct the map
 	shardMap := make(map[shardID]shardData)
 
 	// Generate and add shard data to the map
 	for i, shard := range shards {
-		id, data := generateShardEntry(shard, i, nodeIDs[i]) // Generate the pair
-		shardMap[id] = data                                  // Put the data in the map
+		id, data := generateShardEntry(shard, i, nodes[i]) // Generate the pair
+		shardMap[id] = data                                // Put the data in the map
 	}
 
 	// Construct the database

@@ -44,6 +44,15 @@ func Sha3String(b []byte) string {
 	return hex.EncodeToString(b) // Convert to a hex string
 }
 
+// HashFromString returns a Hash type given a hex string.
+func HashFromString(s string) (Hash, error) {
+	b, err := hex.DecodeString(s)
+	if err != nil {
+		return Hash{}, err
+	}
+	return newHash(b), nil
+}
+
 // IsNil checks if a given hash is nil.
 func (hash Hash) IsNil() bool {
 	nilBytes := 0 // Init nil bytes buffer

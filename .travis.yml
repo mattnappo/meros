@@ -16,7 +16,9 @@ install:
   - go get -u
 
 install: true
-
+script:
+  - go mod init
+  
 jobs:
   include:
     - stage: validate
@@ -35,7 +37,7 @@ jobs:
     - name: "tidy"
       script:
         - git diff --quiet || (echo "\033[0;31mWorking directory not clean!\033[0m" && exit 1) # Check working dir clean
-        - go mod tidy # Tidy
+        - go mod init; go mod tidy # Tidy
     - stage: test
       name: "test"
       script:
