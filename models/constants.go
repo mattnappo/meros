@@ -1,6 +1,6 @@
 package models
 
-import "path/filepath"
+import "path"
 
 // ShardCount is amount of shards a file should be split into.
 const ShardCount int = 3
@@ -12,4 +12,4 @@ const MaxFileSize int = 1000
 const DataPath = "./data"
 
 // FileDBPath is the path of the FileDB.
-var FileDBPath = filepath.Join(DataPath, "file_db")
+var FileDBPath = path.Join(DataPath, "file_db")
