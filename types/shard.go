@@ -44,8 +44,38 @@ func NewShard(bytes []byte) (*Shard, error) {
 	return newShard, nil
 }
 
-// CalculateShardSizes determines the recommended size of each shard.
-func CalculateShardSizes(raw []byte, n int) ([]uint32, error) {
+// GenerateShards generates a slice of shards given a string of bytes
+// This function is a wrapper function. It does not do anything unique.
+func GenerateShards(bytes []byte, n int) ([]*Shard, error) {
+	var shards []*Shard // Init the shard slice
+
+	shardSizes, err := calculateShardSizes(bytes, n) // Calculate the shard sizes
+	if err != nil {
+		return nil, err
+	}
+
+	splitBytes, err := core.SplitBytes(bytes, shardSizes) // Split the bytes into the correct sizes
+	if err != nil {
+		return nil, err
+	}
+
+	// Generate the slices
+	for i := 0; i < len(shardSizes); i++ {
+		// Create a new shard
+		newShard, err := NewShard(
+			splitBytes[i],
+		)
+		if err != nil { // Check error
+			return nil, err
+		}
+		shards = append(shards, newShard) // Append the new shard to the shard slice
+	}
+
+	return shards, nil
+}
+
+// calculateShardSizes determines the recommended size of each shard.
+func calculateShardSizes(raw []byte, n int) ([]uint32, error) {
 	rawSize := len(raw)
 
 	// Check that the input is not null
@@ -71,36 +101,6 @@ func CalculateShardSizes(raw []byte, n int) ([]uint32, error) {
 	sizes[n-1] += modulo // Add the left over bytes to the last element
 
 	return sizes, nil
-}
-
-// GenerateShards generates a slice of shards given a string of bytes
-// This function is a wrapper function. It does not do anything unique.
-func GenerateShards(bytes []byte, n int) ([]*Shard, error) {
-	var shards []*Shard // Init the shard slice
-
-	shardSizes, err := CalculateShardSizes(bytes, n) // Calculate the shard sizes
-	if err != nil {
-		return nil, err
-	}
-
-	splitBytes, err := core.SplitBytes(bytes, shardSizes) // Split the bytes into the correct sizes
-	if err != nil {
-		return nil, err
-	}
-
-	// Generate the slices
-	for i := 0; i < len(shardSizes); i++ {
-		// Create a new shard
-		newShard, err := NewShard(
-			splitBytes[i],
-		)
-		if err != nil { // Check error
-			return nil, err
-		}
-		shards = append(shards, newShard) // Append the new shard to the shard slice
-	}
-
-	return shards, nil
 }
 
 /* ----- BEGIN HELPER FUNCTIONS ----- */
