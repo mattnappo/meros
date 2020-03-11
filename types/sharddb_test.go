@@ -34,9 +34,14 @@ func TestGenerateShardDB(t *testing.T) {
 		t.Logf("%x: %v\n\n", k, v)
 	}
 
-	h := crypto.HashFromString("bafc4c93a862aecc87368f291090fc2fe479eecc3bd15b7efdde01ff92c42592")
+	h, err := crypto.HashFromString("bafc4c93a862aecc87368f291090fc2fe479eecc3bd15b7efdde01ff92c42592")
+	if err != nil {
+		t.Fatal(err)
+	}
 	t.Logf("\nGET: [%v]\n", sharddb.shardMap[shardID(h)])
 
-	// Attempt at reconstruction code (bad)
+	for _, v := range sharddb.shardMap {
+		t.Logf("size: %d\n", v.Size)
+	}
 
 }
