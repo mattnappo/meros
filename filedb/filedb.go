@@ -98,11 +98,6 @@ func (filedb *FileDB) Close() error {
 	return nil
 }
 
-// PutFile adds a new file to the database.
-func (filedb *FileDB) PutFile() {
-
-}
-
 // String marshals the DB as a string.
 func (filedb *FileDB) String() string {
 	json, _ := json.MarshalIndent(*filedb, "", "  ")

@@ -1,6 +1,9 @@
 # This travis file comes from github.com/summercash/go-summercash
 language: go
 
+go:
+  - "1.13"
+
 env:
   global:
   - GO111MODULE=on
