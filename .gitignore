@@ -1,4 +1,5 @@
 # OTHER
+*.swp
 .vscode/
 data/
 .DS_STORE
