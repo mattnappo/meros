@@ -17,8 +17,8 @@ import (
 // for all the files on the network.
 type FileDB struct {
 	Header types.DatabaseHeader `json:"header"` // Database header info
-	Name   string               `json:"name"`   // The name of the file db.
-	DB     *bolt.DB             // BoltDB instance
+	Name   string               `json:"name"`   // The name of the file db
+	DB     *bolt.DB             // BoltDB instance (file map)
 
 	Open bool // Status of the DB
 }
