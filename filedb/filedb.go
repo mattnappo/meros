@@ -1,4 +1,4 @@
-package types
+package filedb
 
 import (
 	"encoding/json"
@@ -10,14 +10,15 @@ import (
 	"github.com/boltdb/bolt"
 	"github.com/xoreo/meros/common"
 	"github.com/xoreo/meros/models"
+	"github.com/xoreo/meros/types"
 )
 
 // FileDB implements the main file database that holds the locations
 // for all the files on the network.
 type FileDB struct {
-	Header DatabaseHeader `json:"header"` // Database header info
-	Name   string         `json:"name"`   // The name of the file db.
-	DB     *bolt.DB       // BoltDB instance
+	Header types.DatabaseHeader `json:"header"` // Database header info
+	Name   string               `json:"name"`   // The name of the file db.
+	DB     *bolt.DB             // BoltDB instance
 
 	Open bool // Status of the DB
 }
@@ -54,17 +55,23 @@ func Open(dbName string) (*FileDB, error) {
 		return nil, err
 	}
 
-	// Create the fileDB struct
-	fileDB := &FileDB{
-		DB:   db, // Set the DB
-		Open: true,
-	}
+	var fileDB *FileDB // The fileDB to return
 
 	// Prepare to serizlize the FileDB struct
 	filedbPath := path.Join(models.FileDBPath, dbName, "db.json")
-	if _, err := os.Stat(filedbPath); err != nil {
-		// Write the FileDB struct to disk if it does not already exist
-		fileDB.serialize(filedbPath)
+	if _, err := os.Stat(filedbPath); err != nil { // If DB name does not exist
+		// Generate header info
+		header, err := types.NewDatabaseHeader(dbName)
+
+		// Create the fileDB struct
+		fileDB = &FileDB{
+			Header: header,
+			Name:   dbName,
+			DB:     db, // Set the DB
+			Open:   true,
+		}
+
+		fileDB.serialize(filedbPath) // Write the FileDB struct to disk
 	}
 
 	return fileDB, nil
