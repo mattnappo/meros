@@ -25,8 +25,8 @@ var (
 type File struct {
 	Filename   string      `json:"filename"`   // The file's filename
 	ShardCount int         `json:"shardCount"` // The number of shards hosting the file
-	Size       uint32      `json:"size"`       // The total size of the file
-	ShardDB    *ShardDB    `json:"shardDB"`    // The pointer to the ShardDB, the place where the locations of the shards are stored
+	Size       uint32      `json:"size"`       // Total size of the file
+	ShardDB    *shardDB    `json:"shard_db"`   // Pointer to this file's shardDb
 	Hash       crypto.Hash `json:"hash"`       // The hash of the file
 }
 
@@ -49,7 +49,6 @@ func NewFile(filename string) (*File, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	size := uint32(fileStat.Size())
 	if size == 0 {
 		return nil, ErrNilFileSize
@@ -64,14 +63,7 @@ func NewFile(filename string) (*File, error) {
 
 	// Compress the data
 	bytes = core.CompressBytes(bytes)
-	// Encrypt the data (implement later)
-
-	// Create the shardDB
-	label := filename + "_" + crypto.Sha3(bytes).String()[:8]
-	shardDB, err := NewShardDB(label, bytes)
-	if err != nil {
-		return nil, err
-	}
+	// Encrypt the data as well (implement later)
 
 	shardCount := models.ShardCount
 
@@ -80,7 +72,7 @@ func NewFile(filename string) (*File, error) {
 		Filename:   filename,   // The filename
 		ShardCount: shardCount, // The total amount of shards hostinng the file
 		Size:       size,       // The total size of the file
-		ShardDB:    shardDB,    // The pointer to the (soon to be networked) database of shards
+		ShardDB:    nil,        // nil for now
 	}
 
 	// Compute the hash of the file

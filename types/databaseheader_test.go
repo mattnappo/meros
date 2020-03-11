@@ -4,11 +4,6 @@ import "testing"
 
 func TestNewDatabaseHeader(t *testing.T) {
 	label := "test label"
-	header, err := NewDatabaseHeader(label)
-
-	if err != nil {
-		t.Fatal(err)
-	}
+	header := NewDatabaseHeader(label)
 	t.Log(header.String())
-
 }
