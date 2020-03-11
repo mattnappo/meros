@@ -19,34 +19,34 @@ type DatabaseHeader struct {
 }
 
 // NewDatabaseHeader creates a new database header.
-func NewDatabaseHeader(label string) (*DatabaseHeader, error) {
+func NewDatabaseHeader(label string) (DatabaseHeader, error) {
 	// Check that the label is not nil
 	if label == "" {
-		return nil, ErrNilDBLabel
+		return DatabaseHeader{}, ErrNilDBLabel
 	}
 
 	// Create the header
-	newDatabaseHeader := &DatabaseHeader{
+	newDatabaseHeader := DatabaseHeader{
 		Label:   label,
 		Created: time.Now().String(), // The timestamp
 	}
 
 	// Compute the header hash and return
-	(*newDatabaseHeader).Hash = crypto.Sha3(newDatabaseHeader.Bytes())
+	newDatabaseHeader.Hash = crypto.Sha3(newDatabaseHeader.Bytes())
 	return newDatabaseHeader, nil
 }
 
 /* ----- BEGIN HELPER FUNCTIONS ----- */
 
 // Bytes converts the database header to bytes.
-func (databaseHeader *DatabaseHeader) Bytes() []byte {
-	json, _ := json.MarshalIndent(*databaseHeader, "", "  ")
+func (databaseHeader DatabaseHeader) Bytes() []byte {
+	json, _ := json.MarshalIndent(databaseHeader, "", "  ")
 	return json
 }
 
 // String converts the database to a string.
-func (databaseHeader *DatabaseHeader) String() string {
-	json, _ := json.MarshalIndent(*databaseHeader, "", "  ")
+func (databaseHeader DatabaseHeader) String() string {
+	json, _ := json.MarshalIndent(databaseHeader, "", "  ")
 	return string(json)
 }
 

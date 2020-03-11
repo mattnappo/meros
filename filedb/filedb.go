@@ -2,7 +2,6 @@ package filedb
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"os"
 	"path"
@@ -54,11 +53,14 @@ func Open(dbName string) (*FileDB, error) {
 	if _, err := os.Stat(filedbPath); err != nil { // If DB name does not exist
 		// Generate header info
 		header, err := types.NewDatabaseHeader(dbName)
+		if err != nil {
+			return nil, err
+		}
 
 		// Create the fileDB struct
 		fileDB = &FileDB{
-			Header: header,
-			Name:   dbName,
+			Header: header, // Set the header
+			Name:   dbName, // Set the name
 		}
 
 		fileDB.serialize(filedbPath) // Write the FileDB struct to disk
@@ -101,6 +103,12 @@ func (filedb *FileDB) PutFile() {
 
 }
 
+// String marshals the DB as a string.
+func (filedb *FileDB) String() string {
+	json, _ := json.MarshalIndent(*filedb, "", "  ")
+	return string(json)
+}
+
 // serialize will serialize the database.
 func (filedb *FileDB) serialize(filepath string) error {
 	json, _ := json.MarshalIndent(*filedb, "", "  ")
@@ -120,27 +128,4 @@ func deserialize(filepath string) (*FileDB, error) {
 	err = json.Unmarshal(data, buffer)
 
 	return buffer, err
-}
-
-// ReadShardFromMemory reads a shard from memory.
-func ReadShardFromMemory(hash string) (*Shard, error) {
-	// Read the file from memory
-	data, err := ioutil.ReadFile(fmt.Sprintf("data/shards/shard_%s.json", hash))
-	if err != nil {
-		return nil, err
-	}
-
-	buffer := &Shard{} // Init a shard buffer
-
-	// Read into the buffer
-	err = json.Unmarshal(data, buffer)
-	if err != nil {
-		return nil, err
-	}
-
-	if (*buffer).Validate() == false {
-		return nil, ErrInvalidShard
-	}
-
-	return buffer, nil // Return the shard pointer
 }

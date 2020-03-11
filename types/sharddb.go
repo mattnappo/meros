@@ -7,7 +7,7 @@ import (
 
 // ShardDB is the database that holds the locations of each shard of a (larger) file.
 type ShardDB struct {
-	Header *DatabaseHeader    `json:"header"` // The database header contains some DB metadata
+	Header DatabaseHeader     `json:"header"` // The database header contains some DB metadata
 	Shards map[peer.ID]*Shard `json:"shards"` // The shards themselves
 }
 
