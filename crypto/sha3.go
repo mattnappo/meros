@@ -14,7 +14,26 @@ const HashLength = 32
 // Hash represents the streamlined hash type to be used.
 type Hash [HashLength]byte
 
-// newHash constructs a new hash given a hash.
+// NewHash constructs a new hash given a hash, API so it returns an error.
+func NewHash(b []byte) (Hash, error) {
+	var hash Hash // Setup the hash
+	bCropped := b // Setup the cropped buffer
+
+	// Check the crop side
+	if len(b) > len(hash) {
+		bCropped = bCropped[len(bCropped)-HashLength:] // Crop the hash
+	}
+
+	// Copy the source
+	copy(
+		hash[HashLength-len(bCropped):],
+		bCropped,
+	)
+
+	return hash, nil
+}
+
+// newHash constructs a new hash given a hash, returns no error
 func newHash(b []byte) Hash {
 	var hash Hash // Setup the hash
 	bCropped := b // Setup the cropped buffer

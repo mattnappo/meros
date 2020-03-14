@@ -33,10 +33,14 @@ func TestGetFile(t *testing.T) {
 	}
 	defer filedb.Close()
 
-	fileid := FileIDFromString("0c644a9a8745e7c160af8fa985801d0fabdcaf0627aa8ba2bb2f11ab1a0f8ee9")
+	fileid, err := FileIDFromString("0c644a9a8745e7c160af8fa985801d0fabdcaf0627aa8ba2bb2f11ab1a0f8ee9")
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	file, err := filedb.GetFile(fileid)
 	if err != nil {
+		t.Logf("%v", file)
 		t.Fatal(err)
 	}
 

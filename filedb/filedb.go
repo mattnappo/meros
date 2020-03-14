@@ -132,8 +132,14 @@ func deserialize(filepath string) (*FileDB, error) {
 type FileID crypto.Hash
 
 // FileIDFromString returns a FileID given a string
-func FileIDFromString(s string) FileID {
+func FileIDFromString(s string) (FileID, error) {
+	b, err := hex.DecodeString(s) // Decode from hex into []byte
+	if err != nil {
+		return FileID{}, err
+	}
 
+	fileIDHash, err := crypto.NewHash(b) // Create the hash
+	return FileID(fileIDHash), err       // Return the cast to FileID
 }
 
 // Bytes converts a given hash to a byte array.
