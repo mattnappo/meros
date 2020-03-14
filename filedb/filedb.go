@@ -1,7 +1,6 @@
 package filedb
 
 import (
-	"crypto"
 	"encoding/hex"
 	"encoding/json"
 	"io/ioutil"
@@ -11,6 +10,7 @@ import (
 
 	"github.com/boltdb/bolt"
 	"github.com/xoreo/meros/common"
+	"github.com/xoreo/meros/crypto"
 	"github.com/xoreo/meros/models"
 	"github.com/xoreo/meros/types"
 )
@@ -133,7 +133,8 @@ type FileID crypto.Hash
 
 // Bytes converts a given hash to a byte array.
 func (fileid FileID) Bytes() []byte {
-	return fileid[:] // Return byte array value
+	hash := crypto.Hash(fileid)
+	return hash.Bytes() // Return byte array value
 }
 
 // String returns the hash as a hex string.

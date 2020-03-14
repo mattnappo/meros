@@ -1,5 +1,7 @@
 package crypto
 
+/* sha3.go was adapted from @dowlandaiello */
+
 import (
 	"encoding/hex"
 
