@@ -47,7 +47,10 @@ func Open(dbName string) (*FileDB, error) {
 			Name: dbName, // Set the name
 		}
 
-		fileDB.serialize(filedbPath) // Write the FileDB struct to disk
+		err = fileDB.serialize(filedbPath) // Write the FileDB struct to disk
+		if err != nil {
+			return nil, err
+		}
 	} else {
 		// If the db does exist, read from it and return it
 		fileDB, err = deserialize(filedbPath)
@@ -65,9 +68,13 @@ func Open(dbName string) (*FileDB, error) {
 		return nil, err
 	}
 
-	fileDB.makeBuckets() // Make the buckets in the database
+	fileDB.DB = db // Set the DB
 
-	fileDB.DB = db     // Set the DB
+	err = fileDB.makeBuckets() // Make the buckets in the database
+	if err != nil {
+		return nil, err
+	}
+
 	fileDB.open = true // Set the status to open
 
 	return fileDB, nil
