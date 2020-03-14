@@ -23,11 +23,11 @@ var (
 
 // File contains the (important) metadata of a file stored in a database.
 type File struct {
-	Filename   string      `json:"filename"`   // The file's filename
-	ShardCount int         `json:"shardCount"` // The number of shards hosting the file
-	Size       uint32      `json:"size"`       // Total size of the file
-	ShardDB    *shardDB    `json:"shard_db"`   // Pointer to this file's shardDb
-	Hash       crypto.Hash `json:"hash"`       // The hash of the file
+	Filename   string      `json:"filename"`    // The file's filename
+	ShardCount int         `json:"shard_count"` // The number of shards hosting the file
+	Size       uint32      `json:"size"`        // Total size of the file
+	ShardDB    *shardDB    `json:"shard_db"`    // Pointer to this file's shardDb
+	Hash       crypto.Hash `json:"hash"`        // The hash of the file
 }
 
 // NewFile constructs a new file from a file in memory.

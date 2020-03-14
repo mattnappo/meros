@@ -2,6 +2,7 @@ package filedb
 
 import (
 	"encoding/json"
+	"errors"
 	"io/ioutil"
 	"os"
 	"path"
@@ -13,6 +14,9 @@ import (
 	"github.com/xoreo/meros/types"
 )
 
+// filesBucket represents the bucket of files in the database.
+var filesBucket = []byte("files")
+
 // FileDB implements the main file database that holds the locations
 // for all the files on the network.
 type FileDB struct {
@@ -20,7 +24,7 @@ type FileDB struct {
 	Name   string               `json:"name"`   // The name of the file db
 	DB     *bolt.DB             // BoltDB instance (file map)
 
-	Open bool // Status of the DB
+	open bool // Status of the DB
 }
 
 // Open opens the database for reading and writing. Creates a new DB if one
@@ -31,20 +35,6 @@ func Open(dbName string) (*FileDB, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	/*
-		Path will look like this:
-			data/
-			- file_db
-				- filedb1/
-					- bolt.db
-					- db.json
-				- filedb2/
-					- bolt.db
-					- db.json
-			- some_other_db/
-			- other_data_info/
-	*/
 
 	var fileDB *FileDB // The fileDB to return
 
@@ -76,8 +66,10 @@ func Open(dbName string) (*FileDB, error) {
 		return nil, err
 	}
 
+	fileDB.makeBuckets() // Make the buckets in the database
+
 	fileDB.DB = db     // Set the DB
-	fileDB.Open = true // Set the status to open
+	fileDB.open = true // Set the status to open
 
 	return fileDB, nil
 }
@@ -89,8 +81,28 @@ func (filedb *FileDB) Close() error {
 		return err
 	}
 
-	filedb.Open = false // Set DB status
+	filedb.open = false // Set DB status
 	return nil
+}
+
+// AddFile addsa a file to the filedb.
+func (filedb *FileDB) AddFile(file types.File) error {
+	if filedb.open == false { // Make sure the DB is open
+		return errors.New("filedb is not open")
+	}
+
+	filedb.DB.
+
+}
+
+// makeBuckets constructs the buckets in the file database.
+func (filedb *FileDB) makeBuckets() {
+	return database.DB.Update(func(tx *bolt.Tx) error {
+		_, err := tx.CreateBucketIfNotExists(filesBucket) // Initialize files bucket
+		if err != nil {
+			return err
+		}
+	}
 }
 
 // String marshals the DB as a string.
