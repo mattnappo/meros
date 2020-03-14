@@ -18,8 +18,14 @@ func TestPutFile(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	err = filedb.PutFile(*file)
+	fid, err := filedb.PutFile(*file)
 	if err != nil {
 		t.Fatal(err)
 	}
+
+	t.Logf("fileID: %s\n", fid.String())
+}
+
+func TestGetFile(t *testing.T) {
+
 }

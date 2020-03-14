@@ -1,6 +1,8 @@
 package filedb
 
 import (
+	"crypto"
+	"encoding/hex"
 	"encoding/json"
 	"io/ioutil"
 	"os"
@@ -126,7 +128,21 @@ func deserialize(filepath string) (*FileDB, error) {
 	return buffer, err
 }
 
+// FileID represents a hash for the keys of files in the filedb.
+type FileID crypto.Hash
+
+// Bytes converts a given hash to a byte array.
+func (fileid FileID) Bytes() []byte {
+	return fileid[:] // Return byte array value
+}
+
+// String returns the hash as a hex string.
+func (fileid FileID) String() string {
+	b := fileid.Bytes()
+	return hex.EncodeToString(b) // Convert to a hex string
+}
+
 // generateFileEntry generates a fileID-file pair for the fileDB.
-func generateFileEntry(file types.File) ([]byte, []byte) {
-	return file.Hash.Bytes(), file.Bytes()
+func generateFileEntry(file types.File) (FileID, []byte) {
+	return FileID(file.Hash), file.Bytes()
 }
