@@ -2,7 +2,6 @@ package filedb
 
 import (
 	"encoding/json"
-	"errors"
 	"io/ioutil"
 	"os"
 	"path"
@@ -85,23 +84,6 @@ func (filedb *FileDB) Close() error {
 	return nil
 }
 
-// AddFile addsa a file to the filedb.
-func (filedb *FileDB) AddFile(file types.File) error {
-	if filedb.open == false { // Make sure the DB is open
-		return errors.New("filedb is closed")
-	}
-
-	// Write the file to the bucket
-	err := filedb.DB.Update(func(tx *bolt.Tx) error {
-		b := tx.Bucket(filesBucket) // Read the bucket
-
-		// Extract the data for the database and put it in the bucket
-		return b.Put(generateFileEntry(file))
-	})
-
-	return err
-}
-
 // makeBuckets constructs the buckets in the file database.
 func (filedb *FileDB) makeBuckets() error {
 	return filedb.DB.Update(func(tx *bolt.Tx) error { // Open tx for bucket creation
@@ -135,4 +117,9 @@ func deserialize(filepath string) (*FileDB, error) {
 	err = json.Unmarshal(data, buffer)
 
 	return buffer, err
+}
+
+// generateFileEntry generates a fileID-file pair for the fileDB.
+func generateFileEntry(file types.File) ([]byte, []byte) {
+	return file.Hash.Bytes(), file.Bytes()
 }
