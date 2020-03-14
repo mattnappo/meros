@@ -88,21 +88,26 @@ func (filedb *FileDB) Close() error {
 // AddFile addsa a file to the filedb.
 func (filedb *FileDB) AddFile(file types.File) error {
 	if filedb.open == false { // Make sure the DB is open
-		return errors.New("filedb is not open")
+		return errors.New("filedb is closed")
 	}
 
-	filedb.DB.
+	// Write the file to the bucket
+	err := filedb.DB.Update(func(tx *bolt.Tx) error {
+		b := tx.Bucket(filesBucket) // Read the bucket
 
+		// Extract the data for the database and put it in the bucket
+		return b.Put(generateFileEntry(file))
+	})
+
+	return err
 }
 
 // makeBuckets constructs the buckets in the file database.
-func (filedb *FileDB) makeBuckets() {
-	return database.DB.Update(func(tx *bolt.Tx) error {
+func (filedb *FileDB) makeBuckets() error {
+	return filedb.DB.Update(func(tx *bolt.Tx) error { // Open tx for bucket creation
 		_, err := tx.CreateBucketIfNotExists(filesBucket) // Initialize files bucket
-		if err != nil {
-			return err
-		}
-	}
+		return err                                        // Handle err
+	})
 }
 
 // String marshals the DB as a string.
