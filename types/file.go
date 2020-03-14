@@ -5,7 +5,6 @@ import (
 	"errors"
 	"os"
 
-	"github.com/xoreo/meros/core"
 	"github.com/xoreo/meros/crypto"
 	"github.com/xoreo/meros/models"
 )
@@ -61,10 +60,6 @@ func NewFile(filename string) (*File, error) {
 		return nil, err
 	}
 
-	// Compress the data
-	bytes = core.CompressBytes(bytes)
-	// Encrypt the data as well (implement later)
-
 	shardCount := models.ShardCount
 
 	// Create a new file pointer
@@ -78,6 +73,13 @@ func NewFile(filename string) (*File, error) {
 	// Compute the hash of the file
 	(*file).Hash = crypto.Sha3(file.Bytes())
 	return file, nil
+}
+
+// FileFromBytes constructs a *File from a []byte.
+func FileFromBytes(b []byte) (*File, error) {
+	buffer := &File{}                // Init buffer
+	err := json.Unmarshal(b, buffer) // Unmarshal json
+	return buffer, err
 }
 
 /* ----- BEGIN HELPER FUNCTIONS ----- */

@@ -35,7 +35,7 @@ func (filedb *FileDB) GetFile(fileid FileID) (*types.File, error) {
 	}
 
 	// Initialize file buffer
-	var file types.File
+	var fileBuffer []byte
 
 	// Read from the database
 	err := filedb.DB.View(func(tx *bolt.Tx) error {
@@ -46,8 +46,12 @@ func (filedb *FileDB) GetFile(fileid FileID) (*types.File, error) {
 				"file '" + fileid.String() + "' not found in filedb '" + filedb.Name + "'",
 			) // Return err if nil
 		}
+
+		copy(fileBuffer, readfile) // Copy the file to the buffer
 		return nil
 	})
 
-	return &file, err
+	// Construct file from bytes and return
+	file, err := types.FileFromBytes(fileBuffer)
+	return file, err
 }

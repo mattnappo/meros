@@ -2,8 +2,11 @@ package core
 
 import "errors"
 
-// ErrCannotSplitBytes is returned when a byte slice cannot be split evenly with the given size array.
-var ErrCannotSplitBytes = errors.New("byte array can not be split given size vector")
+// ErrCannotSplitBytes is returned when a byte slice cannot be split evenly
+// with the given size array.
+var ErrCannotSplitBytes = errors.New(
+	"byte array can not be split given size vector",
+)
 
 // calculateSizeSum calculates the sum of all of the uint32s in a []uint32.
 func calculateSizeSum(sizes []uint32) uint32 {
@@ -34,9 +37,12 @@ func SplitBytes(bytes []byte, sizes []uint32) ([][]byte, error) {
 		// For each byte that needs to be added
 		for i := 0; i < int(currentSize); i++ {
 			tempBytes = append(tempBytes, bytes[currentBytePos]) // Add the byte
-			currentBytePos++                                     // Move the "byte cursor"
+
+			currentBytePos++ // Move the "byte cursor"
 		}
-		splitBytes = append(splitBytes, tempBytes) // Append the shard's bytes to the master slice
+
+		// Append the shard's bytes to the master slice
+		splitBytes = append(splitBytes, tempBytes)
 	}
 
 	return splitBytes, nil

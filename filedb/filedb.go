@@ -131,6 +131,11 @@ func deserialize(filepath string) (*FileDB, error) {
 // FileID represents a hash for the keys of files in the filedb.
 type FileID crypto.Hash
 
+// FileIDFromString returns a FileID given a string
+func FileIDFromString(s string) FileID {
+
+}
+
 // Bytes converts a given hash to a byte array.
 func (fileid FileID) Bytes() []byte {
 	hash := crypto.Hash(fileid)

@@ -126,13 +126,9 @@ func (shard *Shard) Validate() bool {
 
 // ShardFromBytes constructs a *Shard from bytes.
 func ShardFromBytes(b []byte) (*Shard, error) {
-	buffer := &Shard{}
-	err := json.Unmarshal(b, buffer)
-	if err != nil {
-		return nil, err
-	}
-
-	return buffer, nil
+	buffer := &Shard{}               // Init shard buffer
+	err := json.Unmarshal(b, buffer) // Unmarshal json
+	return buffer, err
 }
 
 /* ----- END HELPER FUNCTIONS ----- */
