@@ -47,7 +47,8 @@ func (filedb *FileDB) GetFile(fileid FileID) (*types.File, error) {
 			) // Return err if nil
 		}
 
-		copy(fileBuffer, readfile) // Copy the file to the buffer
+		fileBuffer = make([]byte, len(readfile)) // Init the buffer size
+		copy(fileBuffer, readfile)               // Copy the file to the buffer
 		return nil
 	})
 

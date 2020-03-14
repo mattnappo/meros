@@ -77,6 +77,9 @@ func NewFile(filename string) (*File, error) {
 
 // FileFromBytes constructs a *File from a []byte.
 func FileFromBytes(b []byte) (*File, error) {
+	if b == nil {
+		return nil, errors.New("cannot construct file from nil []byte")
+	}
 	buffer := &File{}                // Init buffer
 	err := json.Unmarshal(b, buffer) // Unmarshal json
 	return buffer, err
