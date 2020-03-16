@@ -15,32 +15,19 @@ import (
 	"github.com/xoreo/meros/types"
 )
 
-// DBType represents the type of database of the instance, either a node's
-// shard database or the main file database.
-type DBType int
-
-const (
-	// FILEDB the marker for a file database.
-	FILEDB DBType = iota,
-
-	// NSHARDDB is the marker for the node's shard database.
-	NSHARDDB DBType = iota,
-)
-
 // Database implements a general database that holds various data within meros.
 type Database struct {
 	Header types.DatabaseHeader `json:"header"` // Database header info
 	Name   string               `json:"name"`   // The name of the db
+	DB     *bolt.DB             // BoltDB instance
 
-	DBType DBType // The type of database
-	DB     *bolt.DB             // BoltDB instance (file map)
-
+	buckets [][]byte // The buckets in the database
 	open bool // Status of the DB
 }
 
 // Open opens the database for reading and writing. Creates a new DB if one
 // with that name does not already exist.
-func Open(dbName string) (*Database, error) {
+func Open(dbName string, buckets ...string) (*Database, error) {
 	// Make sure path exists
 	err := common.CreateDirIfDoesNotExist(path.Join(models.DataPath, dbName))
 	if err != nil {
@@ -59,13 +46,20 @@ func Open(dbName string) (*Database, error) {
 			Name: dbName, // Set the name
 		}
 
-		err = database.serialize(databasePath) // Write the FileDB struct to disk
+		err = database.serialize(databasePath) // Write the database struct to disk
 		if err != nil {
 			return nil, err
 		}
+
+		// Prepare the database for bucket creation
+		for _, bucket := buckets {
+			// Add the (string) bucket to the list of ([]byte) buckets to be created.
+			database.addBucket(bucket)
+		}
+
 	} else {
 		// If the db does exist, read from it and return it
-		fileDB, err = deserialize(databasePath)
+		database, err = deserialize(databasePath)
 		if err != nil {
 			return nil, err
 		}
@@ -103,12 +97,17 @@ func (db *Database) Close() error {
 	return nil
 }
 
-// makeBuckets constructs the buckets in the file database.
+// addBucket safely adds a bucket to the database's list of buckets.
+func (db *Database) addBucket(bucket string) {
+	db.buckets = append(db.buckets, []byte(bucket))
+}
+
+// makeBuckets constructs the buckets in the database.
 func (db *Database) makeBuckets() error {
 	// Create all buckets in the database
 	for _, bucket := db.Buckets {
 		err := db.DB.Update(func(tx *bolt.Tx) error { // Open tx for bucket creation
-			_, err := tx.CreateBucketIfNotExists(filesBucket) // Initialize files bucket
+			_, err := tx.CreateBucketIfNotExists(bucket) // Create bucket
 			return err                                        // Handle err
 		})
 		if err != nil { // Check the err
@@ -118,59 +117,30 @@ func (db *Database) makeBuckets() error {
 }
 
 // String marshals the DB as a string.
-func (filedb *FileDB) String() string {
-	json, _ := json.MarshalIndent(*filedb, "", "  ")
+func (db *Database) String() string {
+	json, _ := json.MarshalIndent(*db, "", "  ")
 	return string(json)
 }
 
-// serialize will serialize the database.
-func (filedb *FileDB) serialize(filepath string) error {
-	json, _ := json.MarshalIndent(*filedb, "", "  ")
+// serialize will serialize the database and write it to disk.
+func (db *Database) serialize(filepath string) error {
+	json, _ := json.MarshalIndent(*db, "", "  ")
 	err := ioutil.WriteFile(filepath, json, 0600)
 	return err
 }
 
-func deserialize(filepath string) (*FileDB, error) {
-	data, err := ioutil.ReadFile(filepath) // Read the file from disk
+// deserialize will deserialize the database from the disk
+func deserialize(filepath string) (*Database, error) {
+	data, err := ioutil.ReadFile(filepath) // Read the database from disk
 	if err != nil {
 		return nil, err
 	}
 
-	buffer := &FileDB{} // Initialize a buffer
+	buffer := &Database{} // Initialize the database buffer
 
-	// Read(write) into the buffer
+	// Unmarshal and write into the buffer
 	err = json.Unmarshal(data, buffer)
 
 	return buffer, err
 }
 
-// FileID represents a hash for the keys of files in the filedb.
-type FileID crypto.Hash
-
-// FileIDFromString returns a FileID given a string
-func FileIDFromString(s string) (FileID, error) {
-	b, err := hex.DecodeString(s) // Decode from hex into []byte
-	if err != nil {
-		return FileID{}, err
-	}
-
-	fileIDHash, err := crypto.NewHash(b) // Create the hash
-	return FileID(fileIDHash), err       // Return the cast to FileID
-}
-
-// Bytes converts a given hash to a byte array.
-func (fileid FileID) Bytes() []byte {
-	hash := crypto.Hash(fileid)
-	return hash.Bytes() // Return byte array value
-}
-
-// String returns the hash as a hex string.
-func (fileid FileID) String() string {
-	b := fileid.Bytes()
-	return hex.EncodeToString(b) // Convert to a hex string
-}
-
-// generateFileEntry generates a fileID-file pair for the fileDB.
-func generateFileEntry(file types.File) (FileID, []byte) {
-	return FileID(file.Hash), file.Bytes()
-}
