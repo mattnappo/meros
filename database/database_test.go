@@ -1,16 +1,16 @@
-package filedb
+package database
 
 import "testing"
 
 func TestOpenAndClose(t *testing.T) {
-	filedb, err := Open("myfiledb")
+	db, err := Open("some_db")
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	t.Logf("filedb: %s\n\n", filedb.String())
+	t.Logf("some_db: %s\n\n", db.String())
 
-	err = filedb.Close()
+	err = db.Close()
 	if err != nil {
 		t.Fatal(err)
 	}

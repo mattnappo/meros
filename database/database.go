@@ -1,4 +1,4 @@
-package filedb
+package database
 
 import (
 	"encoding/hex"
@@ -15,11 +15,7 @@ import (
 	"github.com/xoreo/meros/types"
 )
 
-// filesBucket represents the bucket of files in the database.
-var filesBucket = []byte("files")
-
-// FileDB implements the main file database that holds the locations
-// for all the files on the network.
+// Database implements a general database that holds various data within meros.
 type FileDB struct {
 	Header types.DatabaseHeader `json:"header"` // Database header info
 	Name   string               `json:"name"`   // The name of the file db
