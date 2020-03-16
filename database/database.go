@@ -42,37 +42,37 @@ type Database struct {
 // with that name does not already exist.
 func Open(dbName string) (*Database, error) {
 	// Make sure path exists
-	err := common.CreateDirIfDoesNotExist(path.Join(models.DBPath, dbName))
+	err := common.CreateDirIfDoesNotExist(path.Join(models.DataPath, dbName))
 	if err != nil {
 		return nil, err
 	}
 
-	var fileDB *FileDB // The fileDB to return
+	var database *Database // The database to return
 
-	// Prepare to serizlize the FileDB struct
-	filedbPath := path.Join(models.FileDBPath, dbName, "db.json")
-	if _, err := os.Stat(filedbPath); err != nil { // If DB name does not exist
-		// Create the fileDB struct
-		fileDB = &FileDB{
+	// Prepare to serizlize the database struct
+	databasePath := path.Join(models.DBPath, dbName, "db.json")
+	if _, err := os.Stat(databasePath); err != nil { // If DB name does not exist
+		// Create the database struct
+		database = &Database{
 			Header: types.NewDatabaseHeader(dbName), // Generate and set the header
 
 			Name: dbName, // Set the name
 		}
 
-		err = fileDB.serialize(filedbPath) // Write the FileDB struct to disk
+		err = database.serialize(databasePath) // Write the FileDB struct to disk
 		if err != nil {
 			return nil, err
 		}
 	} else {
 		// If the db does exist, read from it and return it
-		fileDB, err = deserialize(filedbPath)
+		fileDB, err = deserialize(databasePath)
 		if err != nil {
 			return nil, err
 		}
 	}
 
 	// Prepare to open the bolt database
-	boltdbPath := path.Join(models.FileDBPath, dbName, "bolt.db")
+	boltdbPath := path.Join(models.DBPath, dbName, "bolt.db")
 	db, err := bolt.Open(boltdbPath, 0600, &bolt.Options{ // Open the DB
 		Timeout: 1 * time.Second,
 	})
@@ -80,35 +80,41 @@ func Open(dbName string) (*Database, error) {
 		return nil, err
 	}
 
-	fileDB.DB = db // Set the DB
+	database.DB = db // Set the DB
 
-	err = fileDB.makeBuckets() // Make the buckets in the database
+	err = database.makeBuckets() // Make the buckets in the database
 	if err != nil {
 		return nil, err
 	}
 
-	fileDB.open = true // Set the status to open
+	database.open = true // Set the status to open
 
-	return fileDB, nil
+	return database, nil
 }
 
 // Close closes the database.
-func (filedb *FileDB) Close() error {
-	err := filedb.DB.Close() // Close the DB
+func (db *Database) Close() error {
+	err := db.DB.Close() // Close the DB
 	if err != nil {
 		return err
 	}
 
-	filedb.open = false // Set DB status
+	db.open = false // Set DB status
 	return nil
 }
 
 // makeBuckets constructs the buckets in the file database.
-func (filedb *FileDB) makeBuckets() error {
-	return filedb.DB.Update(func(tx *bolt.Tx) error { // Open tx for bucket creation
-		_, err := tx.CreateBucketIfNotExists(filesBucket) // Initialize files bucket
-		return err                                        // Handle err
-	})
+func (db *Database) makeBuckets() error {
+	// Create all buckets in the database
+	for _, bucket := db.Buckets {
+		err := db.DB.Update(func(tx *bolt.Tx) error { // Open tx for bucket creation
+			_, err := tx.CreateBucketIfNotExists(filesBucket) // Initialize files bucket
+			return err                                        // Handle err
+		})
+		if err != nil { // Check the err
+			return err
+		}
+	}
 }
 
 // String marshals the DB as a string.
