@@ -15,10 +15,24 @@ import (
 	"github.com/xoreo/meros/types"
 )
 
+// DBType represents the type of database of the instance, either a node's
+// shard database or the main file database.
+type DBType int
+
+const (
+	// FILEDB the marker for a file database.
+	FILEDB DBType = iota,
+
+	// NSHARDDB is the marker for the node's shard database.
+	NSHARDDB DBType = iota,
+)
+
 // Database implements a general database that holds various data within meros.
 type Database struct {
 	Header types.DatabaseHeader `json:"header"` // Database header info
 	Name   string               `json:"name"`   // The name of the db
+	DBType DBType // The type of database
+
 	DB     *bolt.DB             // BoltDB instance
 
 	buckets [][]byte // The buckets in the database
@@ -36,7 +50,7 @@ func Open(dbName string, buckets ...string) (*Database, error) {
 
 	var database *Database // The database to return
 
-	// Prepare to serizlize the database struct
+	// Prepare to serialize the database struct
 	databasePath := path.Join(models.DBPath, dbName, "db.json")
 	if _, err := os.Stat(databasePath); err != nil { // If DB name does not exist
 		// Create the database struct
