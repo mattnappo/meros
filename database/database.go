@@ -46,7 +46,7 @@ type Database struct {
 // with that name does not already exist.
 func Open(dbName string, dbType DBType) (*Database, error) {
 	// Make sure path exists
-	err := common.CreateDirIfDoesNotExist(path.Join(models.DataPath, dbName))
+	err := common.CreateDirIfDoesNotExist(path.Join(models.DBPath, dbName))
 	if err != nil {
 		return nil, err
 	}

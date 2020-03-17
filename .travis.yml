@@ -35,10 +35,10 @@ jobs:
         - cd $(mktemp -d); go mod init tmp; go get mvdan.cc/gofumpt; cd $TRAVIS_BUILD_DIR
         - git diff --quiet || (echo "\033[0;31mWorking directory not clean!\033[0m" && exit 1) # Check working dir clean
         - gofumpt -w -s . # Fmt
-    - name: "tidy"
-      script:
-        - git diff --quiet || (echo "\033[0;31mWorking directory not clean!\033[0m" && exit 1) # Check working dir clean
-        - go mod init; go mod tidy # Tidy
+    # - name: "tidy"
+    #   script:
+    #     - git diff --quiet || (echo "\033[0;31mWorking directory not clean!\033[0m" && exit 1) # Check working dir clean
+    #     - go mod init; go mod tidy # Tidy
     - stage: test
       name: "test"
       script:
