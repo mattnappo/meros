@@ -9,25 +9,14 @@ import (
 
 // generateEntry generates an ID-file/shard pair for the DB.
 func generateEntry(item interface{}) (ID, []byte, error) {
+	// Type assertion (disambiguation)
 	if t, ok := item.(types.File); ok {
-		castItem := types.File(item)
-		return ID(castItem.Hash), castItem.Bytes, nil
+		return ID(t.Hash), t.Bytes(), nil
 	} else if t, ok := item.(types.Shard); ok {
-		return ID(item.Hash), item.Bytes, nil
+		return ID(t.Hash), t.Serialize(), nil
 	} else {
 		return ID{}, nil, errors.New("invalid type to store in database")
 	}
-	/*
-		// Check the type
-		switch fmt.Sprintf("%T", rawItem) {
-		case "types.File":
-			item := types.File(rawItem)
-			return ID(item.Hash), item.Bytes(), nil
-		case "types.Shard":
-			item := types.Shard(rawItem)
-			return ID(item.Hash), item.Bytes(), nil
-		}
-	*/
 }
 
 // PutItem adds a new item to the database.
@@ -89,6 +78,6 @@ func (db *Database) GetItem(id ID) (interface{}, error) {
 		return types.ShardFromBytes(buffer)
 	}
 
-	// Throw undefined behavior error
+	// Throw for undefined behavior
 	return nil, errors.New("invalid database type was used")
 }

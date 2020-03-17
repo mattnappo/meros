@@ -33,7 +33,7 @@ func TestGetFile(t *testing.T) {
 	}
 	defer filedb.Close()
 
-	fileid, err := IDFromString("0c644a9a8745e7c160af8fa985801d0fabdcaf0627aa8ba2bb2f11ab1a0f8ee9")
+	fileid, err := IDFromString("8ade293f4d76ba0e0b1101c1274dda59925ecb178b763c12126a70d54d1b5469")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -43,6 +43,7 @@ func TestGetFile(t *testing.T) {
 		t.Logf("%v", file)
 		t.Fatal(err)
 	}
-
-	// t.Logf("file '%s': %v\n", fileid.String(), *file)
+	// try dereffing the whole 47
+	v := file.(*types.File)
+	t.Logf("file '%s': %v\n", fileid.String(), v)
 }
