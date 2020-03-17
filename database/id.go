@@ -1,5 +1,11 @@
 package database
 
+import (
+	"encoding/hex"
+
+	"github.com/xoreo/meros/crypto"
+)
+
 // ID represents a hash for the keys in the database.
 type ID crypto.Hash
 

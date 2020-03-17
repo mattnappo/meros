@@ -44,5 +44,5 @@ func TestGetFile(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	t.Logf("file '%s': %v\n", fileid.String(), *file)
+	// t.Logf("file '%s': %v\n", fileid.String(), *file)
 }

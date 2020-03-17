@@ -1,22 +1,33 @@
 package database
 
 import (
-	"encoding/hex"
 	"errors"
 
 	"github.com/boltdb/bolt"
-	"github.com/xoreo/meros/crypto"
 	"github.com/xoreo/meros/types"
 )
 
 // generateEntry generates an ID-file/shard pair for the DB.
 func generateEntry(item interface{}) (ID, []byte, error) {
-	// Check the type
-	t := item.(type)
-	if t == *types.Shard || t == *types.File {
-		return ID(item.Hash), item.Bytes(), nil
+	if t, ok := item.(types.File); ok {
+		castItem := types.File(item)
+		return ID(castItem.Hash), castItem.Bytes, nil
+	} else if t, ok := item.(types.Shard); ok {
+		return ID(item.Hash), item.Bytes, nil
+	} else {
+		return ID{}, nil, errors.New("invalid type to store in database")
 	}
-	return ID{}, nil, errors.New("invalid type to store in database") // Return the error
+	/*
+		// Check the type
+		switch fmt.Sprintf("%T", rawItem) {
+		case "types.File":
+			item := types.File(rawItem)
+			return ID(item.Hash), item.Bytes(), nil
+		case "types.Shard":
+			item := types.Shard(rawItem)
+			return ID(item.Hash), item.Bytes(), nil
+		}
+	*/
 }
 
 // PutItem adds a new item to the database.
@@ -33,7 +44,7 @@ func (db *Database) PutItem(item interface{}) (ID, error) {
 	}
 
 	// Write the item to the bucket
-	err := db.DB.Update(func(tx *bolt.Tx) error {
+	err = db.DB.Update(func(tx *bolt.Tx) error {
 		b := tx.Bucket(db.bucket) // Fetch the bucket
 
 		// Put necessary data into the bucket
