@@ -75,6 +75,9 @@ func (filedb *Database) GetFile(fileid FileID) (*types.File, error) {
 		copy(fileBuffer, readfile)               // Copy the file to the buffer
 		return nil
 	})
+	if err != nil {
+		return nil, err
+	}
 
 	// Construct file from bytes and return
 	file, err := types.FileFromBytes(fileBuffer)
