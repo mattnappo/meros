@@ -11,5 +11,11 @@ const MaxFileSize int = 1000
 // DataPath is where all data is held.
 const DataPath = "./data"
 
+// DBPath represents the path for all databases.
+var DBPath = path.Join(DataPath, "db")
+
 // FileDBPath is the path of the FileDB.
 var FileDBPath = path.Join(DataPath, "file_db")
+
+// NodeDBPath is the path of the NodeDB.
+var NodeDBPath = path.Join(DataPath, "node_db")

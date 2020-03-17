@@ -4,6 +4,9 @@ language: go
 go:
   - "1.13"
 
+dist: xenial
+os: linux
+
 env:
   global:
   - GO111MODULE=on
@@ -15,7 +18,6 @@ install:
   - export GO111MODULE=on
   - go get -u
 
-install: true
 script:
   - go mod init
 
@@ -43,4 +45,4 @@ jobs:
       name: "test"
       script:
         - go run main.go # Run main
-        - chmod +x ./scripts/test.sh && ./scripts/test.sh # Run unit tests
+        - go test ./...  # Test modules 
