@@ -58,12 +58,12 @@ func Open(dbName string, dbType DBType) (*Database, error) {
 	if _, err := os.Stat(databasePath); err != nil { // If DB name does not exist
 		// Create the database struct
 		database = &Database{
-			Header: types.NewDatabaseHeader(dbName), // Generate and set the header
+			Header: types.NewDatabaseHeader(dbName), // Generate and set header
 
 			Name: dbName, // Set the name
 		}
 
-		err = database.serialize(databasePath) // Write the database struct to disk
+		err = database.serialize(databasePath) // Write the db struct to disk
 		if err != nil {
 			return nil, err
 		}
