@@ -1,48 +1,35 @@
-# This travis file comes from github.com/summercash/go-summercash
+# This script was taken from github.com/polaris-project/go-polaris
 language: go
 
 go:
-  - "1.13"
+  - 1.13
+  - master
 
-dist: xenial
 os: linux
+distro: xenial
+install: true
+sudo: false
 
-env:
-  global:
-  - GO111MODULE=on
+matrix:
+  allow_failures:
+    - go: master
+  fast_finish: true
 
 notifications:
   email: false
 
-install:
-  - export GO111MODULE=on
-  - go get -u
+before_install:
+  - export GO111MODULE=on # Enable go mod
+  - go mod vendor # Download dependencies
+
+before_script:
+  - GO_FILES=$(find . -iname '*.go' -type f | grep -v -r ./vendor/) # All the .go files, excluding vendor/, .vendor-new/
+  # For .vendor-new inclusion, GO_FILES=$(find . -iname '*.go' -type f | grep -v -r ./vendor/ ./.vendor-new/)
+  - go get -u golang.org/x/lint/golint
 
 script:
-  - go mod init
+  - test -z $(gofmt -s -l $GO_FILES) # Fail if a .go file hasn't been formatted with gofmt
+  - go vet ./... # Go vet is the official Go static analyzer
+  - chmod +x ./test.sh && ./test.sh # Run unit tests
+  - go build # Build
 
-jobs:
-  include:
-    - stage: validate
-      name: "lint"
-      script:
-        - chmod +x ./scripts/validate_lint.sh # Make validate lint executable
-        - ./scripts/validate_lint.sh # Validate lint
-    - name: "vet"
-      script:
-        - go mod init
-        - go vet ./... # Run static analyzer
-    - name: "gofmt"
-      script:
-        - cd $(mktemp -d); go mod init tmp; go get mvdan.cc/gofumpt; cd $TRAVIS_BUILD_DIR
-        - git diff --quiet || (echo "\033[0;31mWorking directory not clean!\033[0m" && exit 1) # Check working dir clean
-        - gofumpt -w -s . # Fmt
-    - name: "tidy"
-      script:
-        - git diff --quiet || (echo "\033[0;31mWorking directory not clean!\033[0m" && exit 1) # Check working dir clean
-        - go mod init; go mod tidy # Tidy
-    - stage: test
-      name: "test"
-      script:
-        - go run main.go # Run main
-        - go test ./...  # Test modules 

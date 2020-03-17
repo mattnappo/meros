@@ -43,7 +43,48 @@ func TestGetFile(t *testing.T) {
 		t.Logf("%v", file)
 		t.Fatal(err)
 	}
-	// try dereffing the whole 47
+
 	v := file.(*types.File)
 	t.Logf("file '%s': %v\n", fileid.String(), v)
+}
+
+func TestPutShard(t *testing.T) {
+	sharddb, err := Open("mynodesharddb", NSHARDDB)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer sharddb.Close()
+
+	shard, err := types.NewShard([]byte("I represent some bytes in a shard"))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	sid, err := sharddb.PutItem(*shard)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	t.Logf("shardID: %s\n", sid.String())
+}
+
+func TestGetShard(t *testing.T) {
+	sharddb, err := Open("mynodesharddb", NSHARDDB)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer sharddb.Close()
+
+	sid, err := IDFromString("f910670bbb0012b2eb6c4f321a02251d2f38c97a8c28acdda16bb0a3b79c1ab5")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	shard, err := sharddb.GetItem(sid)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	v := shard.(*types.Shard)
+	t.Logf("shard '%s': %v\n", sid, v)
 }
