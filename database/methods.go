@@ -10,8 +10,13 @@ import (
 )
 
 // generateEntry generates an ID-file/shard pair for the DB.
-func generateEntry(item interface{}) (ID, []byte) {
-	return ID(item.Hash), item.Bytes()
+func generateEntry(item interface{}) (ID, []byte, error) {
+	// Check the type
+	t := item.(type)
+	if t == *types.Shard || t == *types.File {
+		return ID(item.Hash), item.Bytes(), nil
+	}
+	return ID{}, nil, errors.New("invalid type to store in database") // Return the error
 }
 
 // PutItem adds a new item to the database.
@@ -22,7 +27,10 @@ func (db *Database) PutItem(item interface{}) (ID, error) {
 	}
 
 	// Extract the data for the database
-	id, data := generateEntry(item)
+	id, data, err := generateEntry(item)
+	if err != nil {
+		return ID{}, err
+	}
 
 	// Write the item to the bucket
 	err := db.DB.Update(func(tx *bolt.Tx) error {
@@ -35,34 +43,41 @@ func (db *Database) PutItem(item interface{}) (ID, error) {
 	return id, err
 }
 
-// GetFile gets a file from the database.
-func (filedb *Database) GetFile(id ID) (*types.File, error) {
-	if filedb.open == false { // Make sure the DB is open
-		return nil, errors.New("filedb is closed")
+// GetItem gets an item from the database.
+func (db *Database) GetItem(id ID) (interface{}, error) {
+	if db.open == false { // Make sure the DB is open
+		return nil, errors.New("db is closed")
 	}
 
-	// Initialize file buffer
-	var fileBuffer []byte
+	// Initialize buffer
+	var buffer []byte
 
 	// Read from the database
-	err := filedb.DB.View(func(tx *bolt.Tx) error {
-		b := tx.Bucket(filedb.bucket) // Fetch the bucket
-		readfile := b.Get(id.Bytes()) // Read the file
-		if readfile == nil {          // Check the file not nil
+	err := db.DB.View(func(tx *bolt.Tx) error {
+		b := tx.Bucket(db.bucket)   // Fetch the bucket
+		dbRead := b.Get(id.Bytes()) // Read the item from the db
+		if dbRead == nil {          // Check the item not nil
 			return errors.New(
-				"file '" + id.String() + "' not found in filedb '" + filedb.Name + "'",
+				"item '" + id.String() + "' not found in db '" + db.Name + "'",
 			) // Return err if nil
 		}
 
-		fileBuffer = make([]byte, len(readfile)) // Init the buffer size
-		copy(fileBuffer, readfile)               // Copy the file to the buffer
+		buffer = make([]byte, len(dbRead)) // Init the buffer size
+		copy(buffer, dbRead)               // Copy the item to the buffer
 		return nil
 	})
 	if err != nil {
 		return nil, err
 	}
 
-	// Construct file from bytes and return
-	file, err := types.FileFromBytes(fileBuffer)
-	return file, err
+	// Construct corresponding type from bytes and return
+	switch db.DBType {
+	case FILEDB:
+		return types.FileFromBytes(buffer)
+	case NSHARDDB:
+		return types.ShardFromBytes(buffer)
+	}
+
+	// Throw undefined behavior error
+	return nil, errors.New("invalid database type was used")
 }
