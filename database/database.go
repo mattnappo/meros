@@ -21,10 +21,16 @@ type DBType int
 
 const (
 	// FILEDB the marker for a file database.
-	FILEDB DBType = iota,
+	FILEDB DBType = iota
 
 	// NSHARDDB is the marker for the node's shard database.
-	NSHARDDB DBType = iota,
+	NSHARDDB DBType = iota
+
+	// fileDBBucket is the bucket used to store files within a filedb.
+	fileDBBucket = "files"
+
+	// nshardDBBucket is the bucket used to store shards within a shard database.
+	nshardDBBucket = "shards"
 )
 
 // Database implements a general database that holds various data within meros.
@@ -34,14 +40,13 @@ type Database struct {
 	DBType DBType // The type of database
 
 	DB     *bolt.DB             // BoltDB instance
-
-	buckets [][]byte // The buckets in the database
+	bucket []byte // The bucket for the database
 	open bool // Status of the DB
 }
 
 // Open opens the database for reading and writing. Creates a new DB if one
 // with that name does not already exist.
-func Open(dbName string, buckets ...string) (*Database, error) {
+func Open(dbName string, dbType DBType) (*Database, error) {
 	// Make sure path exists
 	err := common.CreateDirIfDoesNotExist(path.Join(models.DataPath, dbName))
 	if err != nil {
@@ -65,12 +70,6 @@ func Open(dbName string, buckets ...string) (*Database, error) {
 			return nil, err
 		}
 
-		// Prepare the database for bucket creation
-		for _, bucket := buckets {
-			// Add the (string) bucket to the list of ([]byte) buckets to be created.
-			database.addBucket(bucket)
-		}
-
 	} else {
 		// If the db does exist, read from it and return it
 		database, err = deserialize(databasePath)
@@ -89,6 +88,15 @@ func Open(dbName string, buckets ...string) (*Database, error) {
 	}
 
 	database.DB = db // Set the DB
+	database.DBType = dbType // Set the type of database
+
+	// Bucket handler 
+	switch dbType {
+	case FILEDB: // If FileDB type, set to the corresponding bucket
+		database.bucket = fileDBBucket
+	case NSHARDDB: // If NodeShardDB type, set to the corresponding bucket
+		database.bucket = nshardDBBucket
+	}
 
 	err = database.makeBuckets() // Make the buckets in the database
 	if err != nil {
@@ -111,17 +119,12 @@ func (db *Database) Close() error {
 	return nil
 }
 
-// addBucket safely adds a bucket to the database's list of buckets.
-func (db *Database) addBucket(bucket string) {
-	db.buckets = append(db.buckets, []byte(bucket))
-}
-
 // makeBuckets constructs the buckets in the database.
 func (db *Database) makeBuckets() error {
 	// Create all buckets in the database
 	for _, bucket := db.Buckets {
 		err := db.DB.Update(func(tx *bolt.Tx) error { // Open tx for bucket creation
-			_, err := tx.CreateBucketIfNotExists(bucket) // Create bucket
+			_, err := tx.CreateBucketIfNotExists(db.bucket) // Create bucket
 			return err                                        // Handle err
 		})
 		if err != nil { // Check the err

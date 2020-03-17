@@ -1,8 +1,5 @@
 package database
 
-// filesBucket is the string representation of the bucket for files.
-const filesBucket = "files"
-
 // FileID represents a hash for the keys of files in the filedb.
 type FileID crypto.Hash
 
@@ -46,7 +43,7 @@ func (filedb *Database) PutFile(file types.File) (FileID, error) {
 
 	// Write the file to the bucket
 	err := filedb.DB.Update(func(tx *bolt.Tx) error {
-		b := tx.Bucket(filesBucket) // Fetch the bucket
+		b := tx.Bucket(filedb.bucket) // Fetch the bucket
 
 		// Put necessary data into the bucket
 		return b.Put(fileid.Bytes(), filedata)
@@ -66,7 +63,7 @@ func (filedb *Database) GetFile(fileid FileID) (*types.File, error) {
 
 	// Read from the database
 	err := filedb.DB.View(func(tx *bolt.Tx) error {
-		b := tx.Bucket(filesBucket)       // Fetch the bucket
+		b := tx.Bucket(filedb.bucket)       // Fetch the bucket
 		readfile := b.Get(fileid.Bytes()) // Read the file
 		if readfile == nil {              // Check the file not nil
 			return errors.New(
