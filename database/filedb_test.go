@@ -1,4 +1,4 @@
-package filedb
+package database
 
 import (
 	"testing"
@@ -7,7 +7,7 @@ import (
 )
 
 func TestPutFile(t *testing.T) {
-	filedb, err := Open("myfiledb")
+	filedb, err := Open("myfiledb", filesBucket)
 	if err != nil {
 		t.Fatal(err)
 	}
