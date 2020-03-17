@@ -1,7 +1,6 @@
 package database
 
 import (
-	"encoding/hex"
 	"encoding/json"
 	"io/ioutil"
 	"os"
@@ -10,7 +9,6 @@ import (
 
 	"github.com/boltdb/bolt"
 	"github.com/xoreo/meros/common"
-	"github.com/xoreo/meros/crypto"
 	"github.com/xoreo/meros/models"
 	"github.com/xoreo/meros/types"
 )
@@ -25,23 +23,23 @@ const (
 
 	// NSHARDDB is the marker for the node's shard database.
 	NSHARDDB DBType = iota
-
-	// fileDBBucket is the bucket used to store files within a filedb.
-	fileDBBucket = "files"
-
-	// nshardDBBucket is the bucket used to store shards within a shard database.
-	nshardDBBucket = "shards"
 )
+
+// fileDBBucket is the bucket used to store files within a filedb.
+var fileDBBucket = []byte("files")
+
+// nshardDBBucket is the bucket used to store shards within a shard database.
+var nshardDBBucket = []byte("shards")
 
 // Database implements a general database that holds various data within meros.
 type Database struct {
 	Header types.DatabaseHeader `json:"header"` // Database header info
 	Name   string               `json:"name"`   // The name of the db
-	DBType DBType // The type of database
+	DBType DBType               // The type of database
 
-	DB     *bolt.DB             // BoltDB instance
-	bucket []byte // The bucket for the database
-	open bool // Status of the DB
+	DB     *bolt.DB // BoltDB instance
+	bucket []byte   // The bucket for the database
+	open   bool     // Status of the DB
 }
 
 // Open opens the database for reading and writing. Creates a new DB if one
@@ -87,10 +85,10 @@ func Open(dbName string, dbType DBType) (*Database, error) {
 		return nil, err
 	}
 
-	database.DB = db // Set the DB
+	database.DB = db         // Set the DB
 	database.DBType = dbType // Set the type of database
 
-	// Bucket handler 
+	// Bucket handler
 	switch dbType {
 	case FILEDB: // If FileDB type, set to the corresponding bucket
 		database.bucket = fileDBBucket
@@ -122,15 +120,14 @@ func (db *Database) Close() error {
 // makeBuckets constructs the buckets in the database.
 func (db *Database) makeBuckets() error {
 	// Create all buckets in the database
-	for _, bucket := db.Buckets {
-		err := db.DB.Update(func(tx *bolt.Tx) error { // Open tx for bucket creation
-			_, err := tx.CreateBucketIfNotExists(db.bucket) // Create bucket
-			return err                                        // Handle err
-		})
-		if err != nil { // Check the err
-			return err
-		}
+	err := db.DB.Update(func(tx *bolt.Tx) error { // Open tx for bucket creation
+		_, err := tx.CreateBucketIfNotExists(db.bucket) // Create bucket
+		return err                                      // Handle err
+	})
+	if err != nil { // Check the err
+		return err
 	}
+	return err
 }
 
 // String marshals the DB as a string.
@@ -160,4 +157,3 @@ func deserialize(filepath string) (*Database, error) {
 
 	return buffer, err
 }
-

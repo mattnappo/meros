@@ -7,7 +7,7 @@ import (
 )
 
 func TestPutFile(t *testing.T) {
-	filedb, err := Open("myfiledb", filesBucket)
+	filedb, err := Open("myfiledb", FILEDB)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -27,7 +27,7 @@ func TestPutFile(t *testing.T) {
 }
 
 func TestGetFile(t *testing.T) {
-	filedb, err := Open("myfiledb")
+	filedb, err := Open("myfiledb", FILEDB)
 	if err != nil {
 		t.Fatal(err)
 	}

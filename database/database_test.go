@@ -3,7 +3,7 @@ package database
 import "testing"
 
 func TestOpenAndClose(t *testing.T) {
-	db, err := Open("some_db")
+	db, err := Open("some_db", FILEDB)
 	if err != nil {
 		t.Fatal(err)
 	}
