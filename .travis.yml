@@ -20,6 +20,7 @@ notifications:
 
 before_install:
   - export GO111MODULE=on # Enable go mod
+  - go mod init # Initialize go modules
   - go mod vendor # Download dependencies
 
 before_script:
